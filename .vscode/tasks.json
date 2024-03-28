@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Ignite Release",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "BUILD_MODE=RELEASE"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Ignite Debug",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "BUILD_MODE=DEBUG"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

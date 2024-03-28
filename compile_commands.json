@@ -1,0 +1,38 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-std=c++20",
+      "-Wno-comment",
+      "-O3",
+      "-c",
+      "-o",
+      "build/obj/ignite.o",
+      "src/ignite.cpp"
+    ],
+    "directory": "/media/me/storage/projects/nirovan/ignite",
+    "file": "/media/me/storage/projects/nirovan/ignite/src/ignite.cpp",
+    "output": "/media/me/storage/projects/nirovan/ignite/build/obj/ignite.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-std=c++20",
+      "-Wno-comment",
+      "-O3",
+      "-c",
+      "-o",
+      "build/obj/main.o",
+      "src/main.cpp"
+    ],
+    "directory": "/media/me/storage/projects/nirovan/ignite",
+    "file": "/media/me/storage/projects/nirovan/ignite/src/main.cpp",
+    "output": "/media/me/storage/projects/nirovan/ignite/build/obj/main.o"
+  }
+]
