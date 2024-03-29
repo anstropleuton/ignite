@@ -1,29 +1,3 @@
-/*
- * Ignite Programming Language - aplib.hpp - Contains Anstro Pleuton's lib API and implementations (basically utils).
- *
- * MIT License
- *
- * Copyright (c) 2024 Anstro Pleuton
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 #ifndef APLIB_HPP
 #define APLIB_HPP
 
@@ -37,6 +11,10 @@
 #include <vector>
 
 #ifdef APLIB_RAYLIB
+#include <array>
+#include <cmath>
+
+#include "glm/fwd.hpp"
 #include "glm/glm.hpp" // IWYU pragma: keep
 #include "raylib.h"
 #endif
@@ -158,22 +136,22 @@ namespace aplib {
     // ANSI Escape Code for Colorized and Styled output
     namespace ansi {
         // Reset all colors and styles
-        const std::string reset { "\033[0m" };
+        const std::string reset { "\e[0m" };
 
         // Colors
-        const std::string black { "\033[30m" };
-        const std::string red { "\033[31m" };
-        const std::string green { "\033[32m" };
-        const std::string yellow { "\033[33m" };
-        const std::string blue { "\033[34m" };
-        const std::string magenta { "\033[35m" };
-        const std::string cyan { "\033[36m" };
-        const std::string white { "\033[37m" };
+        const std::string black { "\e[30m" };
+        const std::string red { "\e[31m" };
+        const std::string green { "\e[32m" };
+        const std::string yellow { "\e[33m" };
+        const std::string blue { "\e[34m" };
+        const std::string magenta { "\e[35m" };
+        const std::string cyan { "\e[36m" };
+        const std::string white { "\e[37m" };
 
         // Formats
-        const std::string bold { "\033[1m" };
-        const std::string underline { "\033[4m" };
-        const std::string invert { "\033[7m" };
+        const std::string bold { "\e[1m" };
+        const std::string underline { "\e[4m" };
+        const std::string invert { "\e[7m" };
     } // namespace ansi
 
     // Command line argument parser
@@ -473,7 +451,6 @@ namespace aplib {
 
     // Raw (Binary) file input and output
     namespace rawfile {
-
         // Raw input file stream (without stream operators)
         class irfile {
             std::ifstream istream;
@@ -604,41 +581,54 @@ namespace aplib {
     } // namespace rawfile
 
 #ifdef APLIB_RAYLIB
+    // Raylib wrapper
     namespace rl {
+        // Custom vec2 to convert between glm::vec2 and Vector2
         struct vec2 : public glm::vec2 {
             using glm::vec2::vec2;
             inline vec2(Vector2 v)
                 : glm::vec2(v.x, v.y) {}
+            inline vec2(glm::vec2 v)
+                : glm::vec2(v) {}
             inline operator Vector2()
             {
                 return { x, y };
             }
         };
 
+        // Custom vec3 to convert between glm::vec3 and Vector3
         struct vec3 : public glm::vec3 {
             using glm::vec3::vec3;
             inline vec3(Vector3 v)
                 : glm::vec3(v.x, v.y, v.z) {}
+            inline vec3(glm::vec3 v)
+                : glm::vec3(v) {}
             inline operator Vector3()
             {
                 return { x, y, z };
             }
         };
 
+        // Custom vec4 to convert between glm::vec4 and Vector4
         struct vec4 : public glm::vec4 {
             using glm::vec4::vec4;
             inline vec4(Vector4 v)
                 : glm::vec4(v.x, v.y, v.z, v.w) {}
+            inline vec4(glm::vec4 v)
+                : glm::vec4(v) {}
             inline operator Vector4()
             {
                 return { x, y, z, w };
             }
         };
 
+        // Custom mat4 to convert between glm::mat4 and Matrix
         struct mat4 : public glm::mat4 {
             using glm::mat4::mat4;
             inline mat4(Matrix m)
                 : glm::mat4(m.m0, m.m4, m.m8, m.m12, m.m1, m.m5, m.m9, m.m13, m.m2, m.m6, m.m10, m.m14, m.m3, m.m7, m.m11, m.m15) {}
+            inline mat4(glm::mat4 m)
+                : glm::mat4(m) {}
             inline operator Matrix()
             {
                 return { (*this)[0][0], (*this)[1][0], (*this)[2][0], (*this)[3][0],
@@ -648,6 +638,7 @@ namespace aplib {
             }
         };
 
+        // Custom col to convert between glm::vec4 and Color
         struct col : public vec4 {
             using vec4::vec4;
 
@@ -691,6 +682,7 @@ namespace aplib {
             }
         };
 
+        // Handy shortcut, ofcourse
         inline void raylib_init(std::string title, int width = 800, int height = 450, int fps = 60, unsigned int flags = FLAG_WINDOW_RESIZABLE)
         {
             SetConfigFlags(flags);
@@ -700,10 +692,72 @@ namespace aplib {
             SetExitKey(0);
         }
 
+        // Just for consistency
         inline void raylib_close()
         {
             CloseWindow();
         }
+
+        // 2D world camera, with extra freedom
+        struct WorldCamera2D {
+            Camera2D camera = {
+                .zoom = 1.0f
+            };
+
+            float actual_zoom = 0.0f;
+            float zoom_amount = 0.1f;
+
+            void update()
+            {
+                camera.offset = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
+
+                // Zoom calculation
+                float current_camera_zoom = camera.zoom;
+                actual_zoom += GetMouseWheelMove() * zoom_amount;
+                float next_zoom = std::pow(2.0f, actual_zoom);
+
+                // Target offset calculation
+                vec2 mouse_offset = (vec2)GetMousePosition() - (vec2)camera.offset;
+                float change_with_zoom = 1.0f / current_camera_zoom - 1.0f / next_zoom;
+                vec2 target = (vec2)camera.target + mouse_offset * change_with_zoom;
+
+                // Movement
+                target -= (vec2)GetMouseDelta() / next_zoom;
+
+                // You can optionally make it smooth I guess?
+                camera.target = target;
+                camera.zoom = next_zoom;
+            }
+
+            operator Camera2D()
+            {
+                return camera;
+            }
+        };
+
+        // 3D world camera, with extra freedom
+        struct WorldCamera3D {
+            Camera3D camera = {
+                .up = { 0.0f, 1.0f, 0.0f },
+                .fovy = 75.0f
+            };
+
+            float viewSensitivity;
+            float fieldOfView;
+            float zoom;
+
+            std::array<float, 6> movementSensitivities;
+            float speedModifier;
+
+            vec2 mouseCenter;
+
+            int lockKey;
+            int zoomKey;
+            std::array<int, 6> movementKeys;
+            std::array<float, 2> speedModifierKeys;
+
+            // **PENDING**
+        };
     } // namespace rl
 #endif
 } // namespace aplib
