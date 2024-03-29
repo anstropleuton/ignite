@@ -136,22 +136,22 @@ namespace aplib {
     // ANSI Escape Code for Colorized and Styled output
     namespace ansi {
         // Reset all colors and styles
-        const std::string reset { "\e[0m" };
+        const std::string reset { "\033[0m" };
 
         // Colors
-        const std::string black { "\e[30m" };
-        const std::string red { "\e[31m" };
-        const std::string green { "\e[32m" };
-        const std::string yellow { "\e[33m" };
-        const std::string blue { "\e[34m" };
-        const std::string magenta { "\e[35m" };
-        const std::string cyan { "\e[36m" };
-        const std::string white { "\e[37m" };
+        const std::string black { "\033[30m" };
+        const std::string red { "\033[31m" };
+        const std::string green { "\033[32m" };
+        const std::string yellow { "\033[33m" };
+        const std::string blue { "\033[34m" };
+        const std::string magenta { "\033[35m" };
+        const std::string cyan { "\033[36m" };
+        const std::string white { "\033[37m" };
 
         // Formats
-        const std::string bold { "\e[1m" };
-        const std::string underline { "\e[4m" };
-        const std::string invert { "\e[7m" };
+        const std::string bold { "\033[1m" };
+        const std::string underline { "\033[4m" };
+        const std::string invert { "\033[7m" };
     } // namespace ansi
 
     // Command line argument parser
