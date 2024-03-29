@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 
+#include "aplib.hpp"
 #include "ignite.hpp"
 
 // Welcome to the world
@@ -38,12 +39,14 @@ int main(int argc, char **argv)
 
     // BE SURE TO SYNC IT WITH THE BELOW VECTOR AND BELOW FLAG FUNCTIONS
     enum class flag_type {
-        output = 0
+        help = 0,
+        output,
     };
 
     // The "BELOW VECTOR"
     std::vector<argp::Flag> flags = {
-        argp::Flag { "Output filename", { "output", "out" }, { '0' }, { "filename" }, 0 }
+        argp::Flag { "Print this help message", { "help", "manual", "man" }, { 'h', '?' }, {}, 0 },
+        argp::Flag { "Output filename", { "output", "out" }, { 'o' }, { "filename" }, 0 }
     };
 
     // --------------------------------
@@ -55,6 +58,12 @@ int main(int argc, char **argv)
     // --------------------------------
     // Flag functions
     // --------------------------------
+
+    auto Help = [&](const argp::Option &option)
+    {
+        (void)option;
+        argp::print_help(flags, "Usage: ignite [Options] file...\n\nOptions:\n", "\nFor more information, see https://github.con/anstropleuton/ignite\n");
+    };
 
     auto Output = [&](const argp::Option &option) {
         if (option.additional_arguments.size() > 0)
@@ -73,8 +82,9 @@ int main(int argc, char **argv)
         argp::Option &option = options[i];
         if (!option.unrecognized_option.empty())
         {
-            std::cout << warning_text << "Unrecognized option: " << warning_color << option.unrecognized_option << primary_color;
+            std::cout << warning_text << "Ignoring unrecognized option: " << warning_color << option.unrecognized_option << primary_color << std::endl;
         }
+        if (option.flag == &flags[(int)flag_type::help]) Help(option);
         if (option.flag == &flags[(int)flag_type::output]) Output(option);
     }
 }
