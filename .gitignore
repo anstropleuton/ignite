@@ -33,3 +33,9 @@
 
 # Build folder
 build
+
+# From clangd
+.cache
+
+# From vscode
+.vscode
