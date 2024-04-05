@@ -1,13 +1,13 @@
 # Introduction
 
 ## Welcome to Ignite - programming language that transpiles down to C++!
-This project started as my replacement to C, I did not like the "do it all yourself" aspect of it. I know it is quite fun to make small code that all work together to solve large problems, but it got bored to me so I decided to make a programming language that transpiles down to C++! It transpiles to C++ instead of C just let C++ do some heavy lifting for me...
+This project started as my replacement to C, I did not like the "do it all yourself" aspect of it. I know it is quite fun to make small code that all work together to solve large problems, but it got bored to me so I decided to make a programming language that transpiles down to C++! It originally started as a transpiler that transpiles Ignite source files down to C, but I have change it to transpile down to C++ instead of C just let C++ do some heavy lifting for me... (Some Ignite language constructs aligns well with C++)
 
-Why didn't I just straight up use C++ you may ask? Check the source code of this language transpiler - cause I did use C++ for it. C++ has some tricky to understand features that is not my style. I would like to use C# but it just refused to elaborate in my Linux system, and I want it to be simple and not filled with OOP (Ignite does have *some* OOP). I have tried other programming languages but they just don't fit my style so, here born the Ignite (~~setting flame to every other programming languages~~). I am also highly against the concept of "Data Hiding" or "Access Specifier" (primary reason why I don't like using `class` in C++) and I wanted to achieve freedom and customization in my language.
+Why didn't I just straight up use C++ you may ask? Check the source code of this language transpiler - cause I did use C++ for it. C++ has some tricky to understand features (for me) that are not my style. I would like to use C# for its simpler syntaxes but it just refused to elaborate in my Linux system, and I want it to be simple and not filled with OOP (Ignite does have *some* OOP). I have tried other programming languages but they just don't fit my style so, here born the Ignite (~~setting flame to every other programming languages~~). I am also highly against the concept of "Data Hiding" or "Access Specifier" (primary reason why I don't like using `class` in C++) and I wanted to achieve freedom and customization in my language.
 
-Ignite is inspired by multitude of programming languages, mainly C/C++, and sometimes C#, Python, Rust (yes). So I **want** the readers to be familiar with the concepts in C/C++ programming language before diving deep in this tutorial. This is **not** a beginners guide to programming and beginners are highly encouraged to learn the C (preferably from https://beej.us/guide/bgc) and C++ (preferably from https://learncpp.com) before taking this tutorial. You don't need to learn all of C++ but vast amount of C knowledge is ideal.
+Ignite is inspired by multitude of programming languages, mainly C/C++, and sometimes C#, Python, Rust (yes). So I **want** the readers to be familiar with the concepts in C/C++ programming language before diving deep in this tutorial. This is **not** a beginners guide to programming and beginners are highly encouraged to learn the Cz (preferably from https://beej.us/guide/bgc) and C++ (preferably from https://learncpp.com) before taking this tutorial. You don't need to learn all of C/C++ but a vast amount of C/C++ knowledge is ideal.
 
-Remember that Ignite only transpiles the high level Ignite source files down to C source file. It does not compile all the way down to assembly or machine code (binary, or whatever you call it). You might consider installing a C++ compiler to compile it all the way down to a machine code.
+Remember that Ignite only transpiles the high level Ignite source files down to C++ source file. It does not compile all the way down to assembly or machine code (binary, or whatever you call it). You might consider installing a C++ compiler to compile it all the way down to a machine code.
 
 ### Whom this Programming Language Is For?
 - Myself.
@@ -61,19 +61,19 @@ But in case if the Ignite programming language's package is available from your 
     ```
 
 ## Testing
-Test and make sure the compiler is working properly, grab the below `Hello, World!` example and save it to a file named `hello_world.ign`. To compile the file down to C, use the following command:
+Test and make sure the compiler is working properly, grab the below `Hello, World!` example and save it to a file named `hello_world.ign`. To compile the file down to C++, use the following command:
 ```
-ignite hello_world.ign -o hello_world.c
+ignite hello_world.ign -o hello_world.cpp
 ```
-This will create a C source file named `hello_world.c` which you can optionally compile down to a binary.
+This will create a C++ source file named `hello_world.cpp` which you can optionally compile down to a binary.
 
 # Hello, World!
-This simple program demonstrates the structure of the Ignite programming language. Don't worry, it is similar to C:
+This simple program demonstrates the structure of the Ignite programming language. Don't worry, it is similar to C/C++:
 
 ```ign
 ## Hello, World! - Ignite
 
-# This is a comment and will be preserved in the generated C code.
+# This is a comment and will be preserved in the generated C++ code.
 
 # Include the standard input and output library
 include io : ign.io;
@@ -87,7 +87,7 @@ int main(# Comment can end before newline #)
 ```
 
 In this example,
-- Everything after `#` is a comment and will be preserved in the generated C code.
+- Everything after `#` is a comment and will be preserved in the generated C++ code.
     - You can use another `#` to end comment before the newline.
     - Use a backslash (`\`) before `#` to not end the comment before the newline.
 - `include` is a module inclusion. It searches the availability of the modules in the current directory, include path of your system and installation path for libraries.
@@ -221,6 +221,44 @@ int main()
 }
 ```
 
+# Operator Precedence
+
+Wait a minute. How did we just jumped from a really simple programming concepts - variables and basic operators - to literally Operator Precedence? Ow but it's simple. Operator Precedence are rules that describes which operators are executed at which order. Consider this example line of code:
+```ign
+int d = a + b * c;
+```
+How many operators are used here? You may think there are 2 of them: `+` and `*`. But `=` is also an operator. Which one to resolve first? Operator Precedence is here for you. Operator Precedence tells that the `*` should be resolved before `+`, and then `=`. You can also use parenthesis to throw Operator Precedence out of the window:
+```ign
+int d = (a + b) * c;
+```
+Now stuff inside `(` and `)` will be resolved first, aka `+`. And then `*` (and of course `=` is last one here).
+
+Here is a chart for the orders, we will talk about other operators later. The first list in the chart is the first to be evaluated:
+
+Precedence | Operator                            | Description
+:--------: | ----------------------------------- | -------------------------------------------------------------------------------------
+     1     | ()                                  | Parenthesis
+     2     | []                                  | Array subscript
+     3     | Customized Unary Operators          | User defined unary operators with one operand
+     4     | ~                                   | Bitwise NOT with one operand
+     5     | !                                   | Logical NOT with one operand
+     6     | Unary +, -, *, /                    | Unary prefix or suffix operators with one operand
+     7     | Unary ++, --                        | Unary prefix or suffix increment or decrement with one operand (suffix and prefix at once is an error)
+     8     | Customized Operators                | User defined operators with two operands (precedence depends on order of definition)
+     9     | &, \|, ^                            | Bitwise AND, Bitwise OR and Bitwise XOR with two operands
+    10     | <<, >>                              | Bitwise Left Shift and Right Shift with two operands
+    11     | **                                  | Exponential operator with two operands
+    12     | *, /, %                             | Multiplication, Division and Modulo with two operands
+    13     | +, -                                | Addition and Subtraction with two operands
+    14     | ==, !=, <=, >=, <, >                | Comparison operators with two operands
+    15     | &&, ||                              | Logical AND and Logical OR with two operands
+    16     | =, &=, |=, <<=, >>=, +=, -=, *=, /= | Equals and Compound Assignment Operators with two operands
+    17     | ??                                  | Fallback Operator with two operands
+    18     | Customized Unordered Operators      | User defined operators with more than one symbol and one or more operands (precedence depends on lest number of operands and order)
+    19     | ?:                                  | Conditional Operator with two symbols and three operands
+
+There's a lot to digest. [Custom Unary Operators]()?
+
 # Naming Rules
 
 While naming a variable, function, structure, namespace, etc., you have to follow several rules to define a name for the variable. The naming rules are as follows:
@@ -231,9 +269,7 @@ This implies that names cannot contain special characters or symbols, and cannot
 # Recommended Code Style (Simple Edition)
 
 ## Naming
- 1. Name user-defined types in `Pascal_Snake_Case`.
- 2. Name constants in `UPPER_SNAKE_CASE`.
- 3. Name everything else in `snake_case`.
+ 1. Everything in `snake_case`
 
 ## Break Before Brace
  1. Always break before brace if the contents in the brace defines statements.
@@ -276,7 +312,7 @@ int32 regular_int = 2147483647;
 ```
 
 ### Long `int`
-You can tell that it is the C's `long` (usually, if not `long long`): It is 8 bytes or 64 bits and it can hold values in the range of `-9223372036854775808` to `9223372036854775807`.
+You can tell that it is the C/C++'s `long` (usually, if not `long long`): It is 8 bytes or 64 bits and it can hold values in the range of `-9223372036854775808` to `9223372036854775807`.
 ```ign
 int64 long_int = 9223372036854775807;
 ```
@@ -521,9 +557,9 @@ int ign.main()
 
     io.print("Enter a value: ");
     int input;
-    io.scan(&input); # Use the & (address-of) operator to get the pointer, and use it for argument. See [Pointers](#pointers)
+    io.scan(addr input); # Use the addr (address-of) keyword to get the pointer, and use it for argument. See [Pointers](#pointers)
     # When user enters digits and presses enter button, the `scan` function will take the input and store it in `input` variable
-    # Internal parsing occurs. Failure in parsing will not alter the value
+    # Internal parsing occurs. Failure in parsing will not alter the value (not even set it to `0`, which is default initialization)
 
     # Print the value that the user has entered
     io.print("You entered: {input}\n");
@@ -545,42 +581,48 @@ int main()
 
     stdio.printf("Enter a value: ");
     int input;
-    stdio.scanf("%d", &input);
+    stdio.scanf("%d", addr input);
+
+    # Preparation
+    char c;
+    int i;
+    uint u;
+    float f;
+    float64 f64;
 
     # Few common Format Specifiers for scanning (input)
     stdio.printf("Enter a character: ");
-    stdio.scanf("%c", &ch);
+    stdio.scanf("%c", addr c);
 
-    stdio.printf("Enter an integer in normal form: ");
-    stdio.scanf("%d", &num);
+    stdio.printf("Enter an integer: ");
+    stdio.scanf("%d", addr i);
 
-    stdio.printf("Enter an integer in normal, octal or hexadecimal form: ");
-    stdio.scanf("%i", &num);
+    stdio.printf("Enter an integer in octal or hexadecimal form: ");
+    stdio.scanf("%i", addr i);
 
     stdio.printf("Enter an unsigned integer: ");
-    stdio.scanf("%u", &unum);
+    stdio.scanf("%u", addr u);
 
     stdio.printf("Enter a float: ");
-    stdio.scanf("%f", &fnum);
+    stdio.scanf("%f", addr f);
 
-    stdio.printf("Enter a double (float64): ");
-    stdio.scanf("%lf", &dnum);
+    stdio.printf("Enter a float64: ");
+    stdio.scanf("%lf", addr f64);
 
     # Few common Format Specifier for printing (output)
     stdio.printf("\nValues entered:\n");
-    stdio.printf("Character: %c\n", ch);
-    stdio.printf("String: %s\n", str);
-    stdio.printf("Integer: %d\n", num);
-    stdio.printf("Unsigned Integer: %u\n", unum);
-    stdio.printf("Float: %f\n", fnum);
-    stdio.printf("Double: %lf\n", dnum);
+    stdio.printf("Character: %c\n", c);
+    stdio.printf("Integer: %d\n", i);
+    stdio.printf("Unsigned Integer: %u\n", u);
+    stdio.printf("Float: %f\n", f);
+    stdio.printf("Double: %lf\n", f64);
 }
 ```
 
 # Booleans
 
 ## Boolean Operators
-Before you understand control flow statements (we will get to it later), you need to understand boolean operators. This is because of the use of boolean conditions in control flow statements. Even for boolean, you could use regular addition (`+`) and multiplication (`*`) to perform logical OR and AND between two conditions, but that is not recommended. It is prone to overflow of underlying integer which can produce false results (not `false` results, I mean to say inaccurate results). Overflow is when you assign a value that falls out of the type's range. It rolls back to the opposite side of the range (just learn C pls). For example, let's say you have done a lot of addition operator to get the OR of the two condition. Suddenly, the underlying integer overflowed to negative and later became `-1`? When doing addition operation for `-1` and `1` it becomes `false`. The actual OR operator would see it as non-zero OR non-zero, basically `true` OR `true` which is `true`. We got an incorrect result. So, we use special logical operators instead:
+Before you understand control flow statements (we will get to it later), you need to understand boolean operators. This is because of the use of boolean conditions in control flow statements. Even for boolean, you could use regular addition (`+`) and multiplication (`*`) to perform logical OR and AND between two conditions, but that is not recommended. It is prone to overflow of underlying integer which can produce false results (not `false` results, I mean to say inaccurate results). Overflow is when you assign a value that falls out of the type's range. It rolls back to the opposite side of the range (just learn C/C++ pls). For example, let's say you have done a lot of addition operator to get the OR of the two condition. Suddenly, the underlying integer overflowed to negative and later became `-1`? When doing addition operation for `-1` and `1` it becomes `false`. The actual OR operator would see it as non-zero OR non-zero, basically `true` OR `true` which is `true`. We got an incorrect result. So, we use special logical operators instead:
 
 ### Logical AND
 Logical AND (`&&`) operator gives the AND of it's operands,
@@ -755,9 +797,9 @@ if (player_has_sword)
 You can directly use the boolean expression as the condition:
 ```ign
 int users_count;
-const int MAX_USERS_PER_ROOM = 20;
+int max_users_per_room = 20;
 # ...
-if (users_count > MAX_USERS_PER_ROOM)
+if (users_count > max_users_per_room)
 {
     # Move some users to different room
 }
@@ -847,7 +889,7 @@ else
 }
 ```
 
-`if`-`else`-`if` ladder is actually equivalent to this:
+Just for a fact (and to ruin your sleep), `if`-`else`-`if` ladder is actually equivalent to this:
 ```ign
 if (first_condition)
 {
@@ -961,18 +1003,17 @@ for (initial_statement; condition; update_statement)
 }
 ```
 
-For example:
+For example, you can use it to loop through all the files in a folder and do something with the files:
 ```ign
-int guessed_number;
-while (guessed_number != 8)
+while (file != empty)
 {
-    # Tell that the user guessed wrong number
+    # Process file here
+
     do
     {
-        # Ask user to guess a number at least once
+        file = file_from_folder;
     }
 }
-# Tell that the user has finally guessed the correct number
 ```
 Don't worry, the order may feel weird but you can get used to it pretty quickly.
 
@@ -984,12 +1025,44 @@ do
 while (condition);
 ```
 
+For example, you can make a guessing game:
+```ign
+int guessed_number;
+do
+{
+    # Ask user to guess a number at least once, and after each wrong guess
+}
+while (guessed_number != 8)
+# Tell that the user has finally guessed the correct number
+```
+
 ### `do`-`for` Statement
 I cannot not provide flexibility, so here it is:
 ```ign
 do (initial_statement)
     statement_to_execute_at_least_once;
 for (condition; update_statement);
+```
+
+For example, you can upgrade our previous guessing game:
+```ign
+int guessed_number;
+do (int number_of_tries = 0)
+{
+    # Ask user to guess a number at least once, and after each wrong guess
+    # Only for a few tries
+}
+for (guessed_number != 4 && number_of_tries < 10; number_of_tries++);
+
+# In conjunction with an `if`-`else` statement:
+if (guessed_number != 4)
+{
+    # Tell the user that they have exceed maximum number of tries
+}
+else
+{
+    # Congrats user for miraculously guessing the correct number
+}
 ```
 
 ## `break` Statement
@@ -1016,7 +1089,7 @@ for (initial_statement; condition; update_statement)
 
 For example:
 ```ign
-# Loop for a user in all the lobbies
+# Search for a user in all the lobbies
 for (int lobby = 0; lobby < lobbies_count; lobby++)
 {
     if (user_found)
@@ -1027,7 +1100,7 @@ for (int lobby = 0; lobby < lobbies_count; lobby++)
 ```
 
 ## `continue` Statement
-The `continue` statement is used to restart a loop, meaning it will skip execution of the sentences and start from the beginning of the loop (will execute the `condition` statement, and will execute the `update_statement` in case of `for` loop), and continue executing from the start of the next iteration:
+The `continue` statement is used to restart-ish (continue to) a loop, meaning it will skip execution of the sentences and start from the beginning of the loop (will execute the `condition` statement, and will execute the `update_statement` in case of `for` loop), and continue executing from the start of the next iteration:
 ```ign
 while (condition)
 {
@@ -1075,8 +1148,9 @@ switch (expression)
     case >= value:
         statements_if_expression_is_greater_than_or_equal_to_value; # expression >= value
         break;
-    case < value:
-        statements_if_expression_is_less_than_value; # expression < value
+        # The limits are your imagination (I guess)
+    case < value_1 && case != value_2:
+        statements_if_expression_is_less_than_value_1_and_not_equal_to_value_2; # expression < value
         break;
     default:
         statements_if_every_other_case_is_not_met;
@@ -1105,7 +1179,7 @@ switch (number)
 }
 ```
 
-If you have some statement before any `case` in a `switch`, it will never be executed.
+If you have some statement before any `case` in a `switch`, it will never be executed:
 ```ign
 switch (expression)
 {
@@ -1116,8 +1190,8 @@ switch (expression)
     case >= value:
         statements_if_expression_is_greater_than_or_equal_to_value;
         break;
-    case < value:
-        statements_if_expression_is_less_than_value;
+    case < value_1 && case != value_2:
+        statements_if_expression_is_less_than_value_1_and_not_equal_to_value_2;
         break;
     default:
         statements_if_every_other_case_is_not_met;
@@ -1142,7 +1216,23 @@ switch (expression)
         statements_if_every_other_case_is_not_met;
 }
 ```
-And this is a valid syntax!
+And this is a valid syntax! It's equivalent to this:
+```ign
+switch (expression)
+{
+    case == value_1:
+        statements_if_expression_matches_value_1; # expression == value_1
+        break;
+    case == value_2:
+        statements_if_expression_matches_value_2; # expression == value_2
+        break;
+    case == value_3:
+        statements_if_expression_matches_value_3; # expression == value_3
+        break;
+    default:
+        statements_if_every_other_case_is_not_met;
+}
+```
 
 ### `switch` Without `break`
 Sometimes, you would want to execute the code of the next case too, in that case, you can omit the `break` of the previous case:
@@ -1161,7 +1251,7 @@ switch (expression)
 You can also omit the `break` before the default if you want to execute that as well.
 
 ### `switch` With `continue`
-`continue` in a `switch` statement means falling to the next `case` of the `switch`.
+`continue` in a `switch` statement is used to explicitly making the execution flow fall to the next `case` of the `switch`.
 ```ign
 switch (expression)
 {
@@ -1197,7 +1287,7 @@ while (outer_condition)
 }
 ```
 
-For example:
+For example, breaking out of the x-searching loop and y-searching loop when you found the thing you are looking for in a 2D grid:
 ```ign
 for (int i = 0; i < snake_rows; i++)
 {
@@ -1215,7 +1305,7 @@ for (int i = 0; i < snake_rows; i++)
 You can expand it to break out of more loops and switches by adding more `break` statements.
 
 ## Multiple `continue`
-When you use `continue`, it will restart the nested-most loop (`for` or `while`). If you want to restart the outer or more outer loop, you can use two or more `continue`:
+When you use `continue`, it will continue to the nested-most loop (`for` or `while`). If you want to continue to the outer or more outer loop, you can use two or more `continue`:
 ```ign
 while (outer_condition)
 {
@@ -1223,7 +1313,25 @@ while (outer_condition)
     {
         if (some_other_condition)
         {
-            continue continue; # Restart the outer `while` loop
+            continue continue; # Continue to the outer `while` loop
+        }
+    }
+}
+```
+
+For example, let's extend our snake and ladder game:
+```ign
+for (int i = 0; i < players_count; i++)
+{
+    for (int i = 0; i < snake_rows; i++)
+    {
+        for (int j = 0; j < snake_columns; j++)
+        {
+            if (found_player_in_snakes_head)
+            {
+                # Move the player down and start checking with next player
+                continue continue continue; # Continue to the `players_count` loop
+            }
         }
     }
 }
@@ -1231,14 +1339,14 @@ while (outer_condition)
 
 ## `switch` and Loops with Multiple `break` or `continue`
 
-If you have a nested switch within a loop, and used multiple `break` or `continue`, the `break` will break out of the loop or `continue` will restart the loop:
+If you have a nested switch within a loop, and used multiple `break` or `continue`, the `break` will break out of the loop or `continue` will continue the loop:
 ```ign
 for (initial_statement; inner_condition; update_statement)
 {
     switch (expression)
     {
         case == value1:
-            continue continue; # Restart the `for` loop
+            continue continue; # Continue to the `for` loop
         case == value2:
             break break; # Break out of `for` loop
     }
@@ -1271,23 +1379,27 @@ Labels are one of the programming concept that some users just do not want to us
 ```ign
 jmp label_name:
     # ...
-    if (some_condition) goto label_name;
+    if (some_condition)
+        goto label_name;
 ```
 or
 ```ign
-    if (some_condition) goto label_name;
+    if (some_condition)
+        goto label_name;
     # ...
 jmp label_name:
 ```
 Here, `label_name` defines a point at which the execution can jump to using the `goto` statement. The label can be defined anywhere within a function, even after the `goto` statement.
 
-For all you `goto` haters, take this valid use case of `goto`. Consider the below example, the code is messy:
+For all you `goto` haters, take this valid use case of `goto`:
+Consider the below example, the code is messy (we are using [Functions](#functions) here):
 ```ign
     bool first_file_opened = open_first_file();
     if (!first_file_opened)
     {
         return 1; # Break out of the main function with error code `1`
     }
+
     bool second_file_opened = open_second_file(use_stuff_from_first_file);
     if (!second_file_opened)
     {
@@ -1295,6 +1407,7 @@ For all you `goto` haters, take this valid use case of `goto`. Consider the belo
         close_first_file();
         return 1;
     }
+
     bool third_file_opened = open_third_file(use_stuff_from_second_file);
     if (!third_file_opened)
     {
@@ -1303,6 +1416,7 @@ For all you `goto` haters, take this valid use case of `goto`. Consider the belo
         close_second_file();
         return 1;
     }
+
     bool fourth_file_opened = open_fourth_file(use_stuff_from_third_file);
     if (!fourth_file_opened)
     {
@@ -1326,24 +1440,28 @@ For all you `goto` haters, take this valid use case of `goto`. Consider the belo
 You see the problem? We are duplicating the code for each failure, and it gets progressively worse for more of this. This can be solved using `goto`, so you can do this:
 ```ign
     int return_value = 0;
+
     bool first_file_opened = open_first_file();
     if (!first_file_opened)
     {
         return_value = 1;
         goto first_file_failed;
     }
+
     bool second_file_opened = open_second_file(use_stuff_from_first_file);
     if (!second_file_opened)
     {
         return_value = 1;
         goto second_file_failed;
     }
+
     bool third_file_opened = open_third_file(use_stuff_from_second_file);
     if (!third_file_opened)
     {
         return_value = 1;
         goto third_file_failed;
     }
+
     bool fourth_file_opened = open_fourth_file(use_stuff_from_third_file);
     if (!fourth_file_opened)
     { 
@@ -1372,39 +1490,351 @@ This way, the errored part, let's say third file opening, can just go to the lab
 
 Just remember that bad use case of `goto` does indeed make the code hard to read and maintain, so use it responsibly. But you can't change my mind on the usefulness of `goto`s.
 
+And CONGRATULATIONS! You are officially now a basic programmer! To not be so basic, continue reading. Or, consider implementing all the examples we have discussed so far into an actual working program using the knowledge you have gained so far!
+
 # Functions
 
-**PENDING**
+You have been using them! The `main` is a function that takes no arguments and returns an `int`. In the previous example about [Labels and `goto`](#labels-and-goto), we have used inexistent function to demonstrate a feature, but let's use a real function to do some job. A function is a block of code that can be called (optionally with some arguments) from anywhere in your code to do the job a function does. It executes a series of statements defined inside it, and optionally returns a value as a result. They help organize the code. For example, consider you are asking user for a formatted input and you are parsing (nothing fancy here) it. But you realize that you are using exact same code over and over again every time you want to ask user for a formatted code and parsing them in an exact same way. Now, what happens when you want to change how you parse something or how you ask the user for input? You are in a heap of trouble, my reader! You have to change every single copy you made so far. And THIS, this is where functions really shine! It is a good idea to break down your code into functions, each doing a specific task. So functions are a way to organize your code. So you can take out the asking user for input and parsing part into their separate function and use the function in your code. Now when you want to change something you do it in only one place. To declare a function, use the syntax:
+```ign
+Return_Type function_name(Parameter_Type parameter_name)
+{
+    # Function body
+}
+```
+You can have multiple parameters:
+```ign
+# The syntax for comma separated parameters is a bit different from comma separated multiple variable declaration (see [Variables and Basic Operations](#variables-and-basic-operations)) because you can have different type for different parameters
+Return_Type function_name(Parameter_Type_1 parameter_name_1, Parameter_Type_1 parameter_name_1)
+{
+    # Function body
+}
+```
+Or with no parameters:
+```ign
+Return_Type function_name()
+{
+    # Function body
+}
+```
+Or with no return value:
+```ign
+void function_name(Parameter_Type parameter_name)
+{
+    # Function body
+}
+```
+Or you can omit the brace entirely if you have only one statement:
+```ign
+Return_Type function_name(Parameter_Type parameter_name)
+    return value;
+```
 
-You have been using them!
+All the variables and stuff defined in a function is not accessible by other functions:
+```ign
+void function_a()
+{
+    # `function_a`'s variable
+    int function_a_s_variable;
+}
+
+void function_b()
+{
+    # Cannot use the variable defined in `function_a` in `function_b`
+    function_a_s_variable = 3; # Error: No such variable `function_a_s_variable`
+
+    # Make a new variable instead
+    int function_a_s_variable;
+}
+```
+
+To use a function, use the variable in which you want to get the returned value (if any), and use the function name followed by `(` and `)`. In between `(` and `)` goes your arguments (if any). The arguments are copied to the function, so editing the value from a function will not effect the original value (again, learn C/C++ pls). The returned value (if any) can then be used to assign a variable as mentioned.
+
+For example:
+```ign
+## Functions
+
+include io : ign.io;
+
+int input_int_from_user()
+{
+    io.print("Enter a value: ");
+    int value;
+    io.scan(addr value);
+    return value; # Use `return` keyword to give the value to the caller
+}
+
+void output_int_to_user(int value)
+{
+    io.print("You have entered: {value}\n");
+}
+
+int main()
+{
+    # Here, `input_int_from_user` is called, so the code execution jumps in the function and starts from running the print statements inside the function
+    # The returned value `value` is then assigned to `my_value`, so when user enters a value, the value is stored in `my_value`
+    int my_value = input_int_from_user();
+
+    # Here, we make a copy of the value `my_value` and pass it to `output_int_to_user` (and call that function)
+    # The code execution jumps in that function, and no value is returned (you cannot use this function to assign value to a variable)
+    output_int_to_user(my_value);
+}
+```
+
+Functions are used to separate out repeated code and organize the file into cleanly categorized tasks. A function should do one task and do it well.
+
+## Function Overloading
+So. You have a function that does a thing. You have another function that does another thing in a similar way. Let's say the first function saves an image. You name it `save` for whatever reason. The second function also saves, but it saves a video this time. You name it `save` again. You think you saw a problem but it didn't generate a compiler error because it took different parameters. The first function took an image parameter and second function took a video parameter. How is this possible? It worked fine? Mind boggling I know. This is called Function Overloading. Function Overloading is when you have two or more functions with same name but with different parameters:
+```ign
+# Very basic function
+# Two parameters
+int add(int a, int b)
+{
+    return a + b;
+}
+
+# Three parameters
+int add(int a, int b, int c)
+{
+    return a + b + c;
+}
+
+int main()
+{
+    # Call the first `add` function
+    int my_value = add(2, 3);
+
+    # Call the second `add` function
+    int my_another_value = add(4, 5, 6);
+}
+```
+
+Function can be overloaded when:
+ 1. You have different number of parameters (as seen in the example above). Or
+ 2. You have different types for your parameters (see below example). Or
+ 3. Any combination of the above 1. and 2.
+```ign
+# `int` parameters
+int add(int a, int b)
+{
+    return a + b;
+}
+
+# `float` parameters
+float add(float a, float b)
+{
+    return a + b;
+}
+
+int main()
+{
+    # Call the first `add` function
+    int my_int_value = add(2, 4);
+
+    # Call the second `add` function
+    float my_float_value = add(4.5, 2.8);
+}
+```
+Function cannot be overloaded by return type alone.
 
 ## Nested Functions
-## Function Types and Instances
-## Delegates and Lambdas
-## Anonymous Functions
+This is where it gets interesting, a thing that C/C++ can't do - Nesting Functions. Let's say you have a piece of code that you want to separate it out as a function because it is used in multiple parts of the function. But that piece of code was using a whole bunch of stuff from the local function variables. In that case, you can define a nested function after defining the local variables:
+```ign
+void function_a()
+{
+    int local_variable_a;
+    # Define a function inside a function
+    void function_b()
+    {
+        local_variable_a = 3;
+    }
+}
+```
+This is like the only good use case of nesting function I swear...
+
+Again, same rules as with before, we cannot access the nested function outside the parent function:
+```ign
+void function_a()
+{
+    # Define a function inside a function
+    void function_b()
+    {
+    }
+}
+
+void function_c()
+{
+    # Cannot call the function `function_b`
+    function_b(); # Error: no such function
+}
+```
+
+## Function Instances and Function Types
+The...... what? You heard me right! You can make a variable that can act as a function. The variable stores which function to be called when it is called. And its type is a function type:
+```ign
+int (int a, int b) variable_that_acts_as_function = function_with_same_signature;
+```
+There's a whole lot going on here. `int (int a, int b)` what? It is the type of the variable. This type represents a function type. Later, you can do:
+```ign
+int value = variable_that_acts_as_function(2, 5);
+```
+The `variable_that_acts_as_function` now represents `function_with_same_signature` function. So when calling `variable_that_acts_as_function` it calls `function_with_same_signature`. To assign the variable, the function must have the same signature as the type of the variable. In this case, the function returns an `int`, takes two `int` parameters (`a` and `b`). Variable names are not required to match. You can also reassign the variable to some other function and calling the variable after reassigning will call the reassigned function:
+```ign
+variable_that_acts_as_function = another_function_with_same_signature;
+```
+
+So you can do this:
+```ign
+include io : ign.io;
+
+int add(int a, int b)
+    return a + b;
+
+int subtract(int a, int b)
+    return a - b;
+
+int multiply(int a, int b)
+    return a * b;
+
+int divide(int a, int b)
+    return a / b;
+
+int main()
+{
+restart:
+    char c;
+    io.print("Enter an operation (+, -, *, /): ");
+    io.scan(addr c);
+
+    # Do NOT call operation when it is not set to any function. Or else!
+    int (int a, int b) operation;
+
+    if (c == '+')
+        operation = add;
+    else if (c == '-')
+        operation = subtract;
+    else if (c == '*')
+        operation = multiply;
+    else if (c == '/')
+        operation = divide;
+    else
+    {
+        # Loop forever until user stops daring to enter incorrect values
+        io.print("Invalid operation character, back to square 1\n");
+        goto restart;
+    }
+
+    # Which one is it?
+    int c = operation(3, 7);
+}
+```
+Be sure to use it responsibly tho, because it can introduce some issues, sometimes maintainability issue, just maybe readability issue, definitely what-does-it-call issue, etc. But you can definitely use it for IOICC (if that ever exists, it does not as of writing this).
+
 ## Functions with Function as Parameters and Function as Return Type
+Now we really get into function instances and all the crazy stuff. You can pass function instance as parameter and/or get function instance as a return value of a function. Wanna see how? Check out this crazy syntax of passing function in a function:
+```ign
+int do_operation(int a, int b, int (int a, int b) operation_function)
+{
+    return operation_function(a, b);
+}
+```
+Or as return type:
+```ign
+int (int a, int b) get_operation_function(char operation)
+{
+    int zero_operation(int a, int b)
+        return 0;
+    int addition_operation(int a, int b)
+        return a + b;
+    int subtraction_operation(int a, int b)
+        return a - b;
+    int multiplication_operation(int a, int b)
+        return a * b;
+    int division_operation(int a, int b)
+        return a / b;
+    switch (operation)
+    {
+        case '+': return addition_operation;
+        case '-': return subtraction_operation;
+        case '*': return multiplication_operation;
+        case '/': return division_operation;
+        default:
+            io.print("Invalid operation, returning zero operation\n");
+            return zero_operation;
+    }
+}
+```
+Or both:
+```ign
+int (int a, int b) get_inverse_operation(int (int a, int b) operation_function)
+{
+    int inverse_operation_function(int a, int b)
+        return 1 - 1 / operation_function(a, b);
+    return inverse_operation_function;
+}
+```
+Or function that takes a function that takes a function that takes nothing:
+```ign
+int get_value(int (int () true_value_function) true_value_getter)
+{
+    int true_value_function()
+        return 3;
+    return true_value_getter(true_value_function);
+}
+```
+And it keeps going.
+
+## Anonymous Functions
+You definitely saw it coming right? An anonymous function is one with no name. It is usually meant to be as a quick function that can be passed to another function. Like why create a named function only for it to be passed as an argument to another function?
+```ign
+include io : ign.io;
+
+int function_that_takes_function(int () function)
+{
+    return function() + 2;
+}
+
+int main()
+{
+    int value = function_that_takes_function(int () {
+        return -2;
+    });
+}
+```
+
+There is a reason you cannot define an anonymous function in global scope... how are you gonna use it? Oh and, you can also define a function instance that holds an anonymous function:
+```ign
+int () function_instance = int () {
+    # Anonymous function that is no longer anonymous because it is initialized to `function_instance` and `function_instance` can track this function
+};
+```
+This is NOT a regular function when you define it this way, because the `function_instance` can be changed unlike a regular function:
+```ign
+function_instance = int () {
+    # Another anonymous function, the original anonymous function is lost forever now.
+};
+```
 
 # Constants
 
 Sometimes, you would want to set a variable as constant, so you don't accidentally change its value and cause your factory to be set on fire. To declare a variable as constant, use the `const` keyword, a type specifier, before the type:
 ```ign
-const int MAX_STARS_CAN_RENDER = 512;
+const int max_stars_can_render = 512;
 ```
-Conventionally we use UPPER_SNAKE_CASE to name a constant. A constant, when a value is set, cannot be changed (that's why it's called a constant):
+A constant, when a value is set, cannot be changed (that's why it's called a constant):
 ```ign
-MAX_STARS_CAN_RENDER = 128; // Error: Cannot change the value of constant
+max_stars_can_render = 128; // Error: Cannot change the value of constant
 ```
 
 NOTE: This is not a valid syntax:
 ```ign
-int const CONSTANT_NAME = value;
+int const constant_name = value;
 ```
-The `const` is applied towards the right, but there is no variable name on the right side of the `const` so this is an invalid syntax.
+The `const` is applied towards the right, but there is no type name on the right side of the `const` so this is an invalid syntax.
 
 # Pointers
 
 Ok now don't panic.. d-don't panic. Alright? Calm down. Shhhh...
-Ok a pointer is just a variable that stores the memory address of another variable. Ok ok shhh calm down calm down we got this.
+Ok a pointer is just a variable that stores the memory address of another variable. Ok ok shhh calm down calm down, we got this.
 
 Memory of a variable is usually stored in RAM, Cache (CPU automatically takes stuff from RAM and put it in cache) or sometimes even you storage drive (SSD, HDD. If you have set up your swap partition or file. Or whatever is equivalent in Microsoft Windows OS). So it isn't too accurate to say that memory of a variable lies on RAM. For simplicity sake, we do.
 
@@ -1429,9 +1859,12 @@ You may think pointers are pointless (get it?). This example is pointless. But p
 
 References are just aliases to a variable.
 
+# Manual Memory Management
+
 # More on Functions
 
 ## Pass by Value vs. Pass by Reference or Pointer
+## More Function Examples
 
 # `struct`
 
@@ -1443,6 +1876,7 @@ References are just aliases to a variable.
 ## Pointers `struct`
 ## References `struct`
 ## Constants `struct`
+## Constructors and Destructors
 
 # OOP Stuff
 
@@ -1450,6 +1884,10 @@ References are just aliases to a variable.
 
 ## Inheritance
 ## All Public
+## The Diamond Problem (doesn't exist)
+## Use Composition Over Inheritance
+## How to Virtual and Override
+## Polymorphism
 
 # Arrays
 
@@ -1552,7 +1990,7 @@ io.print("My name is: {my_name}\n");
 There are some things that you can do to string but not to any other array, they are:
 
 ### `length()`
-`length()` differs from `count()`, `length()` returns the number of characters excluding the null terminator of the string (just learn C goddamn it).
+`length()` differs from `count()`, `length()` returns the number of characters excluding the null terminator of the string (just learn C/C++ goddamn it).
 ```ign
 char[] my_address = "#000 AAA, #000 BBB, CCC, DDD - #00000000"; # Did you really thought?
 
@@ -1659,7 +2097,8 @@ Just do:
 ```ign
 array_one += array_two;
 ```
-All the same stuff as previous. Or this if you want to use the `join` method using a special operator:
+All the same stuff as previous.
+Or this if you want to use the `join` method using a special operator:
 ```ign
 array_one .= join(array_two);
 ```
@@ -1708,9 +2147,19 @@ for (uint64 i = 0; i < non_homogeneous_array.count(); i++)
 }
 ```
 
-# Operations on Types
+# Even More to Functions
 
 **PENDING**
+
+## Passing Array To Functions
+## Advantages of Pass By Reference and Pointer
+## Even More Function Examples
+
+# Namespaces
+
+**PENDING**
+
+## Clashing Namespaces with `struct`s
 
 # Working with Multiple Files
 
@@ -1720,11 +2169,11 @@ for (uint64 i = 0; i < non_homogeneous_array.count(); i++)
 
 **PENDING**
 
-# Members on Fundamental Types
+# Adding Members on Fundamental Types
 
 **PENDING**
 
-# More Array Operations
+# Operations on Types
 
 **PENDING**
 
@@ -1732,8 +2181,18 @@ for (uint64 i = 0; i < non_homogeneous_array.count(); i++)
 
 **PENDING**
 
-# Literal Overloading
+# More Array Operations
 
 **PENDING**
 
-# Manual Memory Management
+# Operator Overloading
+
+**PENDING**
+
+## Custom Operators
+## Custom Unary Operators
+## Custom Unordered Operators
+
+# Literal Overloading
+
+**PENDING**

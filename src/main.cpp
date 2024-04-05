@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     auto Help = [&](const argp::Option &option)
     {
         (void)option;
-        argp::print_help(flags, "Usage: ignite [Options] file...\n\nOptions:\n", "\nFor more information, see https://github.con/anstropleuton/ignite\n");
+        argp::print_help(flags, "Usage: " + blue + "ignite" + reset + " [" + green + "Options" + reset + "] file...\n\n" + green + "Options" + reset + ":\n", "\nFor more information, see " + underline + blue + "https://github.con/anstropleuton/ignite" + reset + "\n");
     };
 
     auto Output = [&](const argp::Option &option) {

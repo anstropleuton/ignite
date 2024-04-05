@@ -1,7 +1,16 @@
 #ifndef APLIB_HPP
 #define APLIB_HPP
 
-#include <cstdarg>
+// pre-versioning -> outdated
+// 1.0.0 -> I started using versioning to determine if a copy of aplib.hpp in one of my folders is outdated
+// 1.0.1 -> Made the `requires` feature from C++20 be used only if C++ version is 20
+// 1.2.0 -> Use snake_case for everything
+// 1.2.1 -> New features: template for usage help message, and progress bar
+#define APLIB_VERSION "1.2.0"
+
+#include <termios.h>
+#include <unistd.h>
+
 #include <cstddef>
 #include <cstring>
 #include <fstream>
@@ -17,7 +26,7 @@
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp" // IWYU pragma: keep
 #include "raylib.h"
-#endif
+#endif                 // APLIB_RAYLIB
 
 namespace aplib {
     // Add (combine) two vectors
@@ -152,12 +161,16 @@ namespace aplib {
         const std::string bold { "\033[1m" };
         const std::string underline { "\033[4m" };
         const std::string invert { "\033[7m" };
+
+        // Cursor
+        const std::string hide_cursor = "\033[?25l";
+        const std::string show_cursor = "\033[?25h";
     } // namespace ansi
 
     // Command line argument parser
     namespace argp {
         // Flag to describe valid arguments
-        struct Flag {
+        struct flag {
             std::string description;                       // Flag description for help message
             std::vector<std::string> long_names;           // Long argument flag, such as "version" for --version, "file-name" for --file-name, etc.
             std::vector<char> short_names;                 // Short argument flag, such as 'r' for -r, 'f' for -f, etc.
@@ -166,14 +179,14 @@ namespace aplib {
         };
 
         // Option to describe parsed command-line arguments
-        struct Option {
-            const Flag *flag;                              // Flag for which this option belongs to
+        struct option {
+            const flag *flag_ptr;                          // Flag for which this option belongs to
             std::vector<std::string> additional_arguments; // Gathered additional arguments
             std::string unrecognized_option;               // Option not recognized (in this case flag will be nullptr)
         };
 
         // Parse command-line arguments to options described by flags
-        inline std::vector<Option> get_options_from_flags(std::vector<std::string> args, const std::vector<Flag> &flags)
+        inline std::vector<option> get_options_from_flags(std::vector<std::string> args, const std::vector<flag> &flags)
         {
             enum class flag_type {
                 unknown = 0,
@@ -199,12 +212,12 @@ namespace aplib {
             };
 
             // Parse an option for most of the arguments
-            std::vector<Option> options;
+            std::vector<option> options;
             for (size_t i = 0; i < args.size(); i++)
             {
-                auto create_option = [&](bool &option_created, const Flag &flag) {
-                    Option option = {};
-                    option.flag = &flag;
+                auto create_option = [&](bool &option_created, const flag &flag) {
+                    option option = {};
+                    option.flag_ptr = &flag;
 
                     // Check with all the arguments with current flag
                     for (size_t a = 0; a < flag.additional_arguments.size() && i < args[i].size() - a - 1; a++)
@@ -234,7 +247,7 @@ namespace aplib {
                     // Add unrecognized option when no option was created using this flag
                     bool option_created = false;
 
-                    for (const Flag &flag : flags)
+                    for (const flag &flag : flags)
                     {
                         // Find a matching flag long name
                         for (size_t l = 0; l < flag.long_names.size(); l++)
@@ -248,7 +261,7 @@ namespace aplib {
 
                     if (!option_created)
                     {
-                        options.push_back(Option { nullptr, {}, arg });
+                        options.push_back(option { nullptr, {}, arg });
                     }
                 }
 
@@ -265,7 +278,7 @@ namespace aplib {
                         // Add unrecognized option when no option was created using this flag
                         bool option_created = false;
 
-                        for (const Flag &flag : flags)
+                        for (const flag &flag : flags)
                         {
                             // Find a matching flag short name
                             for (size_t s = 0; s < flag.short_names.size(); s++)
@@ -279,7 +292,7 @@ namespace aplib {
 
                         if (!option_created)
                         {
-                            options.push_back(Option { nullptr, {}, std::string({ '-', c, '\0' }) });
+                            options.push_back(option { nullptr, {}, std::string({ '-', c, '\0' }) });
                         }
                     }
                 }
@@ -293,7 +306,7 @@ namespace aplib {
 
                     bool option_created = false;
 
-                    for (const Flag &flag : flags)
+                    for (const flag &flag : flags)
                     {
                         bool current_option_created = false;
                         // Find a matching flag long name
@@ -325,21 +338,21 @@ namespace aplib {
 
                     if (!option_created)
                     {
-                        options.push_back(Option { nullptr, {}, arg });
+                        options.push_back(option { nullptr, {}, arg });
                     }
                 }
 
                 // Handle arguments that are not flags
                 else
                 {
-                    options.push_back(Option { nullptr, {}, arg });
+                    options.push_back(option { nullptr, {}, arg });
                 }
             }
             return options;
         }
 
         // Same as above but shorthand
-        inline std::vector<Option> get_options_from_flags(int argc, char **argv, const std::vector<Flag> &flags)
+        inline std::vector<option> get_options_from_flags(int argc, char **argv, const std::vector<flag> &flags)
         {
             std::vector<std::string> args;
             for (int i = 1; i < argc; i++)
@@ -349,28 +362,58 @@ namespace aplib {
             return get_options_from_flags(args, flags);
         }
 
+        struct flag_colors {
+            std::string flag_style_color;                   // Color of "--" or '-' before the name of the flag
+            std::string flag_color;                         // Flag name color
+            std::string flag_separation_color;              // ", "
+            std::string flag_argument_color;                // Additional argument color
+            std::string flag_optional_argument_color;       // Optional argument color
+            std::string flag_optional_argument_style_color; // Color of '[' and ']' that encloses optional argument
+            std::string description_align_color;            // Color of '.'s before description to indent
+            std::string description_color;                  // Description text color
+
+            static inline flag_colors default_colors()
+            {
+                return flag_colors {
+                    .flag_style_color = ansi::reset,
+                    .flag_color = ansi::cyan,
+                    .flag_separation_color = ansi::reset,
+                    .flag_argument_color = ansi::green,
+                    .flag_optional_argument_color = ansi::blue,
+                    .flag_optional_argument_style_color = ansi::reset,
+                    .description_align_color = ansi::reset,
+                    .description_color = ansi::reset
+                };
+            }
+        };
+
         // Print help message of a flag
-        inline void print_flag_help(const Flag &flag, size_t flag_indent = 2, size_t description_indent = 40, size_t max_width = 80)
+        inline void print_flag_help(const flag &flag, size_t flag_indent = 2, size_t description_indent = 40, size_t max_width = 80, const flag_colors &colors = flag_colors::default_colors())
         {
             using namespace std::string_literals;
 
-            // Just a function to print and count the number of characters printed
-            auto cprintf = [](std::string format, ...) -> size_t {
-                size_t result = 0;
-                std::va_list args;
-                va_start(args, format);
-                result = std::vprintf(format.c_str(), args);
-                va_end(args);
-                return result;
+            // Just a function to print and count the number of characters (excluding ANSI escape codes) printed
+            auto count_print = [](std::string string) -> size_t {
+                string += ansi::reset;
+                std::cout << string;
+                int count = 0;
+                bool inEscape = false;
+                for (char ch : string)
+                {
+                    if (ch == '\033') inEscape = true;
+                    else if (inEscape && ch == 'm') inEscape = false;
+                    else if (!inEscape) count++;
+                }
+                return count;
             };
 
             size_t chars_printed = 0;
 
             // Pre-indent
-            chars_printed += cprintf(" "s * flag_indent);
+            chars_printed += count_print(" "s * flag_indent);
             if (flag.short_names.size() == 0)
             {
-                chars_printed += cprintf("    ");
+                chars_printed += count_print("    ");
             }
 
             // Short flags (-a)
@@ -378,15 +421,15 @@ namespace aplib {
             {
                 if (i != 0)
                 {
-                    chars_printed += cprintf(", ");
+                    chars_printed += count_print(", ");
                 }
-                chars_printed += cprintf("-%c", flag.short_names[i]);
+                chars_printed += count_print(colors.flag_style_color + "-" + colors.flag_color + flag.short_names[i]);
             }
 
             // Separation between short and long flags
             if (flag.short_names.size() != 0 && flag.long_names.size() != 0)
             {
-                chars_printed += cprintf(", ");
+                chars_printed += count_print(colors.flag_separation_color + ", ");
             }
 
             // Long flags (--argument)
@@ -394,9 +437,9 @@ namespace aplib {
             {
                 if (i != 0)
                 {
-                    chars_printed += cprintf(", ");
+                    chars_printed += count_print(", ");
                 }
-                chars_printed += cprintf("--%s", flag.long_names[i].c_str());
+                chars_printed += count_print(colors.flag_style_color + "--" + colors.flag_color + flag.long_names[i]);
             }
 
             // Additional arguments
@@ -405,25 +448,24 @@ namespace aplib {
                 chars_printed += printf(" ");
                 if (i >= flag.additional_arguments.size() - flag.optional_arguments_count)
                 {
-                    chars_printed += cprintf("[");
+                    chars_printed += count_print(colors.flag_optional_argument_style_color + "[" + colors.flag_optional_argument_color + flag.additional_arguments[i] + colors.flag_optional_argument_style_color + "]");
                 }
-                chars_printed += cprintf("%s", flag.additional_arguments[i].c_str());
-                if (i >= flag.additional_arguments.size() - flag.optional_arguments_count)
+                else
                 {
-                    chars_printed += cprintf("]");
+                    chars_printed += count_print(colors.flag_argument_color + flag.additional_arguments[i]);
                 }
             }
 
-            chars_printed += cprintf(" ");
+            chars_printed += count_print(" ");
 
             // Description
             if (chars_printed > description_indent)
             {
-                cprintf("\n"s + " "s * (description_indent - 1) + ".");
+                count_print("\n"s + " "s * (description_indent - 1) + colors.description_align_color + ".");
             }
             else
             {
-                cprintf("."s * (description_indent - chars_printed));
+                count_print(colors.description_align_color + "."s * (description_indent - chars_printed));
             }
 
             std::vector<std::string> wrapped_lines = apstr::word_wrap(flag.description, max_width - description_indent);
@@ -431,21 +473,30 @@ namespace aplib {
             {
                 if (i != 0)
                 {
-                    cprintf(" "s * description_indent);
+                    count_print(" "s * description_indent);
                 }
-                cprintf(" %s\n", wrapped_lines[i].c_str());
+                count_print(" " + colors.description_color + wrapped_lines[i] + "\n");
             }
         }
 
         // Print help message of all flags
-        inline void print_help(const std::vector<Flag> &flags, std::string header, std::string footer, size_t flag_indent = 2, size_t description_indent = 40, size_t max_width = 80)
+        inline void print_help(const std::vector<flag> &flags, size_t flag_indent = 2, size_t description_indent = 40, size_t max_width = 80)
         {
-            std::cout << header;
-            for (const Flag &flag : flags)
+            for (const flag &flag : flags)
             {
                 print_flag_help(flag, flag_indent, description_indent, max_width);
             }
-            std::cout << footer;
+        }
+
+        // Print help message of all flags with template
+        inline void print_help(const std::vector<flag> &flags, std::string program_name, std::string program_color = ansi::blue, std::string options_color = ansi::green, size_t flag_indent = 2, size_t description_indent = 40, size_t max_width = 80)
+        {
+            std::cout << "Usage: " << program_color << program_name << ansi::reset << " [" << options_color << "Options" << ansi::reset << "]\n\n"
+                      << options_color << "Options:" << ansi::reset << std::endl;
+            for (const flag &flag : flags)
+            {
+                print_flag_help(flag, flag_indent, description_indent, max_width);
+            }
         }
     } // namespace argp
 
@@ -560,7 +611,9 @@ namespace aplib {
         // Convert byte vector to type
         template <typename T>
         inline T to_data(const std::vector<std::byte> &bytes)
+#if __cplusplus >= 202002L
             requires(sizeof(T) == bytes.size())
+#endif // __cplusplus >= 202002L
         {
             T data = {};
             const size_t t_size = sizeof(T);
@@ -571,7 +624,9 @@ namespace aplib {
         // Convert byte vector to some type vector
         template <typename T>
         inline std::vector<T> to_vector(const std::vector<std::byte> &bytes)
+#if __cplusplus >= 202002L
             requires(bytes.size() % sizeof(T) == 0)
+#endif // __cplusplus >= 202002L
         {
             const size_t t_size = sizeof(T);
             std::vector<T> vector = std::vector<T>(bytes.size() / t_size);
@@ -699,7 +754,7 @@ namespace aplib {
         }
 
         // 2D world camera, with extra freedom
-        struct WorldCamera2D {
+        struct world_camera_2D {
             Camera2D camera = {
                 .zoom = 1.0f
             };
@@ -736,30 +791,91 @@ namespace aplib {
         };
 
         // 3D world camera, with extra freedom
-        struct WorldCamera3D {
+        struct world_camera_3D {
             Camera3D camera = {
                 .up = { 0.0f, 1.0f, 0.0f },
                 .fovy = 75.0f
             };
 
-            float viewSensitivity;
-            float fieldOfView;
+            float view_sensitivity;
+            float fov;
             float zoom;
 
-            std::array<float, 6> movementSensitivities;
-            float speedModifier;
+            enum class movement_sensitivities_t {
+                up,
+                down,
+                left,
+                right,
+                forward,
+                backward
+            };
 
-            vec2 mouseCenter;
+            std::array<float, 6> movement_sensitivities;
+            float speed_modifier;
 
-            int lockKey;
-            int zoomKey;
-            std::array<int, 6> movementKeys;
-            std::array<float, 2> speedModifierKeys;
+            vec2 mouse_center;
+
+            int lock_key;
+            int zoom_key;
+            std::array<int, 6> movement_keys;
+            std::array<float, 2> speed_modifier_keys;
 
             // **PENDING**
         };
-    } // namespace rl
-#endif
+    }  // namespace rl
+#endif // APLIB_RAYLIB
+
+    namespace tty {
+        // Globals
+        inline struct termios original_tty_state = {};
+        inline struct termios current_tty_state = {};
+        inline bool original_tty_state_set = false;
+
+        // Insert a flag to TTY
+        inline void insert_tty_flag(tcflag_t flag)
+        {
+            if (!original_tty_state_set)
+            {
+                tcgetattr(STDIN_FILENO, &original_tty_state);
+                original_tty_state_set = true;
+            }
+
+            current_tty_state = original_tty_state;
+            current_tty_state.c_lflag |= flag;
+            tcsetattr(STDIN_FILENO, TCSANOW, &current_tty_state);
+        }
+
+        // Remove a flag from TTY
+        inline void remove_tty_flag(tcflag_t flag)
+        {
+            if (!original_tty_state_set)
+            {
+                tcgetattr(STDIN_FILENO, &original_tty_state);
+                original_tty_state_set = true;
+            }
+
+            current_tty_state = original_tty_state;
+            current_tty_state.c_lflag &= ~flag;
+            tcsetattr(STDIN_FILENO, TCSANOW, &current_tty_state);
+        }
+
+        // Restore the default TTY flags
+        inline void restore_tty_flag()
+        {
+            if (original_tty_state_set)
+            {
+                current_tty_state = original_tty_state;
+                tcsetattr(STDIN_FILENO, TCSANOW, &current_tty_state);
+            }
+        }
+    } // namespace tty
+
+    namespace misc {
+        inline std::string make_progress_bar(size_t exclusive_width, float progress_01, char full = '#', char empty = ' ', std::string before = "[", std::string after = "]")
+        {
+            return before + std::string(1, full) * (exclusive_width * progress_01) + std::string(1, empty) * (exclusive_width * (1.0f - progress_01)) + after;
+        }
+    } // namespace misc
 } // namespace aplib
 
 #endif
