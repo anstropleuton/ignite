@@ -114,19 +114,19 @@ include io : ign.io;
 int main()
 {
     # Declare a variable
-    int variable_name;
+    int variableName;
 
     # Assign a value to the variable using the `=` (assignment) operator
-    variable_name = 2; # Here, `2` is a numerical literal, an integer constant in this case
+    variableName = 2; # Here, `2` is a numerical literal, an integer constant in this case
 
     # Declare another variable
-    int another_variable_name; # The name must be different from what you used before
+    int anotherVariableName; # The name must be different from what you used before
 
     # Assign this variable with the one we created earlier
-    another_variable_name = variable_name;
+    anotherVariableName = variableName;
 
-    # Print the value of the `another_variable_name` variable
-    io.print("The value of the `another_variable_name` variable is {another_variable_name}\n"); # String interpolation. See [String Interpolation](#string-interpolation)
+    # Print the value of the `anotherVariableName` variable
+    io.print("The value of the `anotherVariableName` variable is {anotherVariableName}\n"); # String interpolation. See [String Interpolation](#string-interpolation)
     # ... Use `{{` and `}}` if you want to print literal `{` and `}`
 
     # For simplicity sake, we will use small variable names from here onward
@@ -239,12 +239,12 @@ Precedence | Operator                            | Description
 :--------: | ----------------------------------- | -------------------------------------------------------------------------------------
      1     | ()                                  | Parenthesis
      2     | []                                  | Array subscript
-     3     | Customized Unary Operators          | User defined unary operators with one operand
+     3     | Custom Unary Operators              | User defined unary operators with one operand
      4     | ~                                   | Bitwise NOT with one operand
      5     | !                                   | Logical NOT with one operand
      6     | Unary +, -, *, /                    | Unary prefix or suffix operators with one operand
      7     | Unary ++, --                        | Unary prefix or suffix increment or decrement with one operand (suffix and prefix at once is an error)
-     8     | Customized Operators                | User defined operators with two operands (precedence depends on order of definition)
+     8     | Custom Operators                    | User defined operators with two operands (precedence depends on order of definition)
      9     | &, \|, ^                            | Bitwise AND, Bitwise OR and Bitwise XOR with two operands
     10     | <<, >>                              | Bitwise Left Shift and Right Shift with two operands
     11     | **                                  | Exponential operator with two operands
@@ -254,10 +254,10 @@ Precedence | Operator                            | Description
     15     | &&, ||                              | Logical AND and Logical OR with two operands
     16     | =, &=, |=, <<=, >>=, +=, -=, *=, /= | Equals and Compound Assignment Operators with two operands
     17     | ??                                  | Fallback Operator with two operands
-    18     | Customized Unordered Operators      | User defined operators with more than one symbol and one or more operands (precedence depends on lest number of operands and order)
+    18     | Custom Unordered Operators          | User defined operators with more than one symbol and one or more operands (precedence depends on lest number of operands and order)
     19     | ?:                                  | Conditional Operator with two symbols and three operands
 
-There's a lot to digest. [Custom Unary Operators]()?
+There's a lot to digest here. [Custom Unary Operators](#custom-unary-operators)? [Custom Operators](#custom-operators)? [Custom Unordered Operators](#custom-unordered-operators)? `!=` ([Comparison Operators](#comparison-operators))? `?:` ([Conditional Operator](#conditional-operator))? A lot of things really. We will talk about each one throughout this document.
 
 # Naming Rules
 
@@ -269,7 +269,10 @@ This implies that names cannot contain special characters or symbols, and cannot
 # Recommended Code Style (Simple Edition)
 
 ## Naming
- 1. Everything in `snake_case`
+ 1. User-defined types in `PascalCase` (and by extension, [Type Aliases](#type-aliases)).
+ 2. Variables in `camelCase` (and by extension, function parameters, see [Functions](#functions)).
+ 3. Constants in `UPPER_SNAKE_CASE`.
+ 4. Everything else in `lower_snake_case`.
 
 ## Break Before Brace
  1. Always break before brace if the contents in the brace defines statements.
@@ -289,32 +292,32 @@ You have seen the `int` type in the previous example. But just for clarity, it s
 ### Regular `int`
 Regular integer (`int`) has a size of 32 bits and it can hold values in the range of `-2147483648` to `2147483647`.
 ```ign
-int integer_type = 42;
+int regularInt = 42;
 ```
 
 ### Shortest `int`
 Shortest integer (`int8`) is of 1 byte or 8 bits (the minimum allowed by most-if-not-all systems) and it can hold values in the range of `-128` to `127`.
 ```ign
-int8 shortest_int = 127;
+int8 shortestInt = 127;
 ```
 You can also use `int08` if you want that sweet, very sweet alignment.
 
 ### Short `int`
 Short integer is what many of you, developer, may recognize as int of 2 bytes or 16 bits, is the same in Ignite, and it can hold values in the range of `-32768` to `32767`.
 ```ign
-int16 short_int = 32767;
+int16 shortInt = 32767;
 ```
 
 ### Regular `int` pt. 2
 There is an alternative typename for `int`, which is `int32` (for sake of consistency). It is exactly the same as `int`.
 ```ign
-int32 regular_int = 2147483647;
+int32 regularInt = 2147483647;
 ```
 
 ### Long `int`
 You can tell that it is the C/C++'s `long` (usually, if not `long long`): It is 8 bytes or 64 bits and it can hold values in the range of `-9223372036854775808` to `9223372036854775807`.
 ```ign
-int64 long_int = 9223372036854775807;
+int64 longInt = 9223372036854775807;
 ```
 
 You can also use `sint` and their variants (`sint16`, etc.) to explicitly specify signed integer types (again, for sake of consistency).
@@ -325,32 +328,32 @@ In certain scenarios, you do not need the negative values that is offered by int
 ### Regular unsigned `int`
 Unsigned version (`uint`) of regular int (`int`), it can hold values in the range of `0` to `4294967295`.
 ```ign
-uint unsigned_int = 84;
+uint unsignedInt = 84;
 ```
 
 ### Shortest unsigned `int`
 Unsigned version (`uint8`) of shortest int (`int8`), it can hold values in the range of `0` to `255`.
 ```ign
-uint8 shortest_unsigned_int = 84;
+uint8 shortestUnsignedInt = 84;
 ```
 Again, you can use `uint08` if you want that extremely sweet alignment.
 
 ### Short unsigned `int`
 Unsigned version (`uint16`) of short int (`int16`), it can hold values in the range of `0` to `65535`.
 ```ign
-uint16 short_unsigned_int = 65535;
+uint16 shortUnsignedInt = 65535;
 ```
 
 ### Regular unsigned `int` pt. 2
 Again for consistency, here is `uint32` as the exact same type as of `uint`.
 ```ign
-uint32 regular_unsigned_int = 4294967295;
+uint32 regularUnsignedInt = 4294967295;
 ```
 
 ### long unsigned `int`
 Unsigned version (`uint64`) of long int (`int64`), it can hold values in the range of `0` to `18446744073709551615`.
 ```ign
-uint64 long_unsigned_int = 18446744073709551615;
+uint64 longUnsignedInt = 18446744073709551615;
 ```
 
 ## Floating Point (decimal) Types
@@ -359,19 +362,19 @@ Not always will you be storing the whole integers, you might sometimes also want
 ### Regular `float`
 Regular float (`float`) is a single precision floating point type that can be precise up to 7 decimal digits.
 ```ign
-float decimal_value = 3.14;
+float regularFloat = 3.14;
 ```
 
 ### Regular `float` pt. 2
 There is an alternative typename for `float`, which is `float32` (again, for sake of consistency). It is exactly the same as `float`.
 ```ign
-float32 regular_float = 1.414213;
+float32 regularFloat = 1.414213;
 ```
 
 ### Double Precision `float`
 The double precision float type can be precise up to 15 to 16 decimal digits.
 ```ign
-float64 double_float = 2.71828182845904;
+float64 doubleFloat = 2.71828182845904;
 ```
 
 ## Character Type
@@ -396,16 +399,16 @@ A variable of fundamental data type can be implicitly or explicitly converted to
 Implicit Casting:
 ```ign
 int integer = 42;
-float floating_point = 3.141592;
-int float_to_int = floating_point; # `float_to_int` is now `3`
-float int_to_float = integer; # `int_to_float` is now `42` (but in `float` data type)
+float floatingPoint = 3.141592;
+int floatToInt = floatingPoint; # `floatToInt` is now `3`
+float intToFloat = integer; # `intToFloat` is now `42` (but in `float` data type)
 ```
 Explicit Casting (usually not required):
 ```ign
 int integer = 42;
-float floating_point = 3.141592;
-int float_to_int = (int)floating_point; # `float_to_int` is now `3`
-float int_to_float = (float)integer; # `int_to_float` is now `42`
+float floatingPoint = 3.141592;
+int floatToInt = (int)floatingPoint; # `floatToInt` is now `3`
+float intToFloat = (float)integer; # `intToFloat` is now `42`
 ```
 
 ## `auto`
@@ -423,9 +426,9 @@ This is because the `auto` resolves it's type on initialization and the type of 
 ## Promotion
 What happens when you multiply an integer value with a floating point value? Data type promotion takes place. The integer is converted to a floating point value and resulting data type of the expression is a floating point type. For example:
 ```ign
-float value_1 = 2.5;
-int value_2 = 4;
-auto value_3 = value_1 * value_2; # `value_3` will be of `float64` type
+float value1 = 2.5;
+int value2 = 4;
+auto value3 = value1 * value2; # `value3` will be of `float64` type
 ```
 The conversion rules are slightly different for different operators:
 - Firstly, if there is any operation of two different types, the higher order ones are selected. The order list is:
@@ -444,13 +447,13 @@ include io : ign.io;
 int main()
 {
     # Make use of regular or unsigned int for most scenarios
-    int amount_withdrawn = 100000;
+    int amountWithdrawn = 100000;
 
     # Make use of memory efficiently by utilizing small size int in scenarios like this
-    uint8 pixel_brightness = 64;
+    uint8 pixelBrightness = 64;
 
     # Output unsigned int
-    io.print("Brightness of pixel is: {pixel_brightness}\n");
+    io.print("Brightness of pixel is: {pixelBrightness}\n");
 
     # Use double precision for better floating point arithmetic in scenarios where precision matters more
     float64 pi = 3.14159265358979;
@@ -468,10 +471,10 @@ int main()
     io.print("Value of c is: {c}\n");
 
     # Convert character to int
-    int character_as_int = (int)c; # `character_as_int` now has `49` as it's value
+    int characterAsInt = (int)c; # `characterAsInt` now has `49` as it's value
 
     # Implicit conversion
-    int pixel_brightness_squared = pixel_brightness ** 2; # Convert `pixel_brightness` to `int` and then square it
+    int pixel_brightness_squared = pixelBrightness ** 2; # Convert `pixelBrightness` to `int` and then square it
 }
 ```
 
@@ -479,19 +482,20 @@ int main()
 
 In case of the example:
 ```ign
-int my_size = 36;
+int halfCards = 26;
 ```
 and
 ```ign
-float my_approximation = 4.57;
+float speedMultiplier = 4.57;
 ```
-The numerical literals are `36` and `4.57`. However, if you want to incorporate size in the literal, or if you want to represent number from a different number system, you can use suffixes (for sizes):
+The numerical literals are `26` and `4.57`. However, if you want to incorporate size in the literal, or if you want to represent number from a different number system, you can use suffixes (for sizes):
 ```ign
-auto my_number = 2.4f46_32; # `_32` suffix denotes a `float32` type
+auto costOfConversion = 2.446_32; # `_32` suffix denotes a `float32` type
 ```
 or prefixes:
 ```ign
-auto my_digit = 0x34d25f; # Here, `0x` denotes a hexadecimal, which is equivalent to `3461727`
+# Long name I know
+auto totalCostOfConversionPerContainer = 0x34d25f; # Here, `0x` denotes a hexadecimal, which is equivalent to `3461727`
 ```
 Here is the chart for all the built-in systems and sizes:
 
@@ -505,6 +509,7 @@ Type          | \-     | _i     | Signed Type                       | Only Integ
 Type          | \-     | _u     | Unsigned Type                     | Only Integer Literal
 Type          | \-     | _s     | Signed Type                       | Only Integer Literal
 Type          | \-     | _f     | Floating Point Type               | All Numerical Literal
+Size          | \-     | _*n*   | Size provided Number              | All Numerical Literal
 Type and Size | \-     | _i*n*  | Size Provided Signed Type         | Only Integer Literal
 Type and Size | \-     | _u*n*  | Size Provided Unsigned Type       | Only Integer Literal
 Type and Size | \-     | _s*n*  | Size Provided Signed Type         | Only Integer Literal
@@ -572,7 +577,7 @@ Wait hold on... where are format specifiers as promised in the title? For this, 
 ## Standard I/O and Format Specifiers - Ignite/C
 
 # This time, we will use C's standard IO
-include stdio : c.stdio;
+include stdio : c_bindings.stdio;
 
 int main()
 {
@@ -679,22 +684,22 @@ include io : ign.io;
 
 int ign.main()
 {
-    int total_fruits_cost = 13;
-    int total_vegetables_cost = 3; # Low on vegetables :(
+    int totalFruitsCost = 13;
+    int totalVegetablesCost = 3; # Low on vegetables :(
 
     # Using comparison operators
-    bool apply_fruit_discount = total_fruits_cost > 10; # `true`
-    bool apply_vegetable_discount = total_vegetables_cost > 5; # `false`, buy some more vegetables ;)
+    bool applyFruitDiscount = totalFruitsCost > 10; # `true`
+    bool applyVegetableDiscount = totalVegetablesCost > 5; # `false`, buy some more vegetables ;)
 
     # Using logical operators
-    bool apply_discount = apply_fruit_discount || apply_vegetable_discount; # `true`
-    bool no_discount = !apply_discount; # `false`
+    bool applyDiscount = applyFruitDiscount || applyVegetableDiscount; # `true`
+    bool noDiscount = !applyDiscount; # `false`
 
-    bool is_high_season = true;
-    bool is_member = false;
+    bool isHighSeason = true;
+    bool isMember = false;
 
-    # Just a tiny bit complex
-    bool eligible_for_extra_discount = apply_discount && (is_high_season || is_member);
+    # Just a tiny bit more complex
+    bool eligible_for_extra_discount = applyDiscount && (isHighSeason || isMember);
 }
 ```
 
@@ -703,7 +708,8 @@ To store the results that you get from a boolean expression, you use the `bool` 
 ```ign
 int a = 3;
 int b = 4;
-bool is_a_greater = a > b; # The value of `is_a_greater` is `false` or `0`
+
+bool isAGreater = a > b; # The value of `isAGreater` is `false` or `0`
 ```
 
 ## Bitwise Operators
@@ -786,9 +792,9 @@ This applies for all the other statements
 
 For example:
 ```ign
-bool player_has_sword;
+bool playerHasSword;
 # ...
-if (player_has_sword)
+if (playerHasSword)
 {
     # Alert nearby mobs to attach the player
 }
@@ -796,22 +802,23 @@ if (player_has_sword)
 
 You can directly use the boolean expression as the condition:
 ```ign
-int users_count;
-int max_users_per_room = 20;
+int usersCount;
+const int MAX_USERS_PER_ROOM = 20;
 # ...
-if (users_count > max_users_per_room)
+if (usersCount > MAX_USERS_PER_ROOM)
 {
     # Move some users to different room
 }
 ```
+Also see [Constants](#constants).
 
 ## `else` Statement
 The `else` statement optionally comes right after an `if` statement. This statement is executed only if the condition of the `if` statement turns out to be `false` or `0`.
 ```ign
 if (condition)
-    statements_if_condition_is_true;
+    statementsIfConditionIsTrue;
 else
-    statements_if_condition_is_false;
+    statementsIfConditionIsFalse;
 ```
 
 For example:
@@ -830,9 +837,9 @@ else
 
 You may think that you would want only the `else` part of the code for whatever reason, but it is redundant to do this way:
 ```ign
-int password_length;
+int passwordLength;
 # ...
-if (password_length < 10)
+if (passwordLength < 10)
 {
     # Empty block
 }
@@ -844,9 +851,9 @@ else
 
 But you can just flip the condition and do this:
 ```ign
-int password_length;
+int passwordLength;
 # ...
-if (password_length >= 10)
+if (passwordLength >= 10)
 {
     # Allow password
 }
@@ -855,17 +862,17 @@ if (password_length >= 10)
 ## `if`-`else`-`if` Ladder
 You can chain the `if` and `else` to create a ladder:
 ```ign
-if (first_condition)
+if (firstCondition)
 {
-    # First code (ran if the `first_condition` is `true`)
+    # First code (ran if the `firstCondition` is `true`)
 }
-else if (second_condition)
+else if (secondCondition)
 {
-    # Second code (ran if the `first_condition` is `false` and `second_condition` is `true`)
+    # Second code (ran if the `firstCondition` is `false` and `secondCondition` is `true`)
 }
-else if (third_condition)
+else if (thirdCondition)
 {
-    # Third code (ran if the `first_condition` is `false` and `second_condition` is `false` and `third_condition` is `true`)
+    # Third code (ran if the `firstCondition` is `false` and `secondCondition` is `false` and `thirdCondition` is `true`)
 }
 else
 {
@@ -875,37 +882,37 @@ else
 
 For example:
 ```ign
-if (level_one_3_stars)
+if (currentLevel == 1 && level1Stars == 3)
 {
-    # Congrats the user for achieving 3 stars in level one
+    # Congrats the player for achieving 3 stars in level 1
 }
-else if (level_two_3_stars)
+else if (currentLevel == 2 && level2Stars == 3)
 {
-    # Congrats the user for achieving 3 stars in level two
+    # Congrats the player for achieving 3 stars in level 1
 }
 else
 {
-    # Inform the user that no levels have 3 stars achieved
+    # Inform the player that currently played level does not have 3 stars achieved
 }
 ```
 
 Just for a fact (and to ruin your sleep), `if`-`else`-`if` ladder is actually equivalent to this:
 ```ign
-if (first_condition)
+if (firstCondition)
 {
-    # First code (ran if the `first_condition` is `true`)
+    # First code (ran if the `firstCondition` is `true`)
 }
 else
 {
-    if (second_condition)
+    if (secondCondition)
     {
-        # Second code (ran if the `first_condition` is `false` and `second_condition` is `true`)
+        # Second code (ran if the `firstCondition` is `false` and `secondCondition` is `true`)
     }
     else
     {
-        if (third_condition)
+        if (thirdCondition)
         {
-            # Third code (ran if the `first_condition` is `false` and `second_condition` is `false` and `third_condition` is `true`)
+            # Third code (ran if the `firstCondition` is `false` and `secondCondition` is `false` and `thirdCondition` is `true`)
         }
         else
         {
@@ -919,17 +926,17 @@ else
 The `while` statement is used to repeat the code as long as a given condition is `true`.
 ```ign
 while (condition)
-    statement_that_is_executed_as_long_as_condition_remains_true; # It is recommended to alter the condition in the loop so it does not run infinitely
+    statementThatIsExecutedAsLongAsConditionRemains_true; # It is recommended to alter the condition in the loop so it does not run infinitely
 ```
 
 For example:
 ```ign
-int chocolates_count = 20;
+int chocolatesCount = 20;
 # ...
-while (chocolates_count > 0)
+while (chocolatesCount > 0)
 {
     # Eat chocolate
-    chocolates_count--; # Alter the condition so it doesn't get hooked into an infinite loop (and don't eat infinite chocolates)
+    chocolatesCount--; # Alter the condition so it doesn't get hooked into an infinite loop (and don't eat infinite chocolates)
     # Take a break
 }
 ```
@@ -937,24 +944,24 @@ while (chocolates_count > 0)
 ## `for` Statement
 The `for` statement is used when you want to execute a code certain defined amount of times. It executes the initial statement, checks condition and executes the block accordingly, and executes a statement after each iteration that is meant to alter the condition.
 ```ign
-for (initial_statement; condition; update_statement)
-    statement_to_execute_defined_times;
+for (initialStatement; condition; updateStatement)
+    statementToExecuteDefinedTimes;
 ```
 It is a shorthand for:
 ```ign
-initial_statement;
+initialStatement;
 while (condition)
 {
-    statement_to_execute_defined_times;
-    update_statement;
+    statementToExecuteDefinedTimes;
+    updateStatement;
 }
 ```
 
 For example:
 ```ign
-for (int weapon_index = 0; weapon_index < weapon_count; weapon_index++)
+for (int weaponIndex = 0; weaponIndex < weaponCount; weaponIndex++)
 {
-    # Refill ammos of all the weapons
+    # Refill ammos of all the weapons just before round 2
 }
 ```
 
@@ -967,15 +974,15 @@ while (condition)
     {
         # This will execute at least once if the condition firstly resulted in `false`
         # And executed repeatedly while the condition is `true`
-        statement_to_execute_at_least_once;
+        statementToExecuteAtLeastOnce;
     }
     # This is executed repeatedly while the condition is `true`
-    statement_to_execute_in_regular_while;
+    statementToExecuteInRegularWhile;
     do
     {
         # This will execute at least once if the condition firstly resulted in `false`
         # And executed repeatedly while the condition is `true`
-        statement_to_execute_at_least_once;
+        statementToExecuteAtLeastOnce;
     }
 }
 ```
@@ -983,22 +990,22 @@ It will initially execute both the statements in `do`.
 
 or for `for` loop:
 ```ign
-# NOTE: the `initial_statement` is executed before the statements in the `do`
-for (initial_statement; condition; update_statement)
+# NOTE: the `initialStatement` is executed before the statements in the `do`
+for (initialStatement; condition; updateStatement)
 {
     do
     {
         # This will execute at least once if the condition firstly resulted in `false`
         # And executed repeatedly while the condition is `true`
-        statement_to_execute_at_least_once;
+        statementToExecuteAtLeastOnce;
     }
     # This is executed repeatedly while the condition is `true`
-    statement_to_execute_in_regular_while;
+    statementToExecuteInRegularWhile;
     do
     {
         # This will execute at least once if the condition firstly resulted in `false`
         # And executed repeatedly while the condition is `true`
-        statement_to_execute_at_least_once;
+        statementToExecuteAtLeastOnce;
     }
 }
 ```
@@ -1011,7 +1018,7 @@ while (file != empty)
 
     do
     {
-        file = file_from_folder;
+        file = nextFileFromFolder;
     }
 }
 ```
@@ -1021,41 +1028,41 @@ Don't worry, the order may feel weird but you can get used to it pretty quickly.
 If you however still couldn't grasp this idea and are more familiar with the traditional `do`-`while` statement, Ignite got you! In Ignite you can use the traditional (~~inferior~~... mhm) syntax to do the same:
 ```ign
 do
-    statement_to_execute_at_least_once;
+    statementToExecuteAtLeastOnce;
 while (condition);
 ```
 
 For example, you can make a guessing game:
 ```ign
-int guessed_number;
+int guessedNumber;
 do
 {
     # Ask user to guess a number at least once, and after each wrong guess
 }
-while (guessed_number != 8)
+while (guessedNumber != 8)
 # Tell that the user has finally guessed the correct number
 ```
 
 ### `do`-`for` Statement
 I cannot not provide flexibility, so here it is:
 ```ign
-do (initial_statement)
-    statement_to_execute_at_least_once;
-for (condition; update_statement);
+do (initialStatement)
+    statementToExecuteAtLeastOnce;
+for (condition; updateStatement);
 ```
 
 For example, you can upgrade our previous guessing game:
 ```ign
-int guessed_number;
-do (int number_of_tries = 0)
+int guessedNumber;
+do (int numberOfTries = 0)
 {
     # Ask user to guess a number at least once, and after each wrong guess
     # Only for a few tries
 }
-for (guessed_number != 4 && number_of_tries < 10; number_of_tries++);
+for (guessedNumber != 4 && numberOfTries < 10; numberOfTries++);
 
 # In conjunction with an `if`-`else` statement:
-if (guessed_number != 4)
+if (guessedNumber != 4)
 {
     # Tell the user that they have exceed maximum number of tries
 }
@@ -1071,28 +1078,28 @@ The `break` statement is used to stop a loop from continuing, it is useful when 
 while (condition)
 {
     statements;
-    if (some_other_condition)
+    if (someOtherCondition)
         break; # Stop the loop and don't execute rest of the statements
-    rest_of_the_statements_in_loop;
+    restOfTheStatementsInLoop;
 }
 ```
 or for `for` loop:
 ```ign
-for (initial_statement; condition; update_statement)
+for (initialStatement; condition; updateStatement)
 {
     statements;
-    if (some_other_condition)
+    if (someOtherCondition)
         break; # Stop the loop and don't execute rest of the statements
-    rest_of_the_statements_in_loop;
+    restOfTheStatementsInLoop;
 }
 ```
 
 For example:
 ```ign
 # Search for a user in all the lobbies
-for (int lobby = 0; lobby < lobbies_count; lobby++)
+for (int lobby = 0; lobby < lobbiesCount; lobby++)
 {
-    if (user_found)
+    if (userFound)
         break; # Break if the user is found, and stop marking lobbies as searched
     # Mark lobby as searched
 }
@@ -1100,24 +1107,24 @@ for (int lobby = 0; lobby < lobbies_count; lobby++)
 ```
 
 ## `continue` Statement
-The `continue` statement is used to restart-ish (continue to) a loop, meaning it will skip execution of the sentences and start from the beginning of the loop (will execute the `condition` statement, and will execute the `update_statement` in case of `for` loop), and continue executing from the start of the next iteration:
+The `continue` statement is used to restart-ish (continue to) a loop, meaning it will skip execution of the sentences and start from the beginning of the loop (will execute the `condition` statement, and will execute the `updateStatement` in case of `for` loop), and continue executing from the start of the next iteration:
 ```ign
 while (condition)
 {
     statements;
-    if (some_other_condition)
+    if (someOtherCondition)
         continue; # Go back to the beginning of the loop
-    rest_of_the_statements_in_loop;
+    restOfTheStatementsInLoop;
 }
 ```
 or for `for` loop:
 ```ign
-for (initial_statement; condition; update_statement)
+for (initialStatement; condition; updateStatement)
 {
     statements;
-    if (some_other_condition)
+    if (someOtherCondition)
         continue; # Go back to the beginning of the loop
-    rest_of_the_statements_in_loop;
+    restOfTheStatementsInLoop;
 }
 ```
 
@@ -1143,17 +1150,17 @@ The `switch` statement is used in replacement for `if`-`else`-`if` ladder, and i
 switch (expression)
 {
     case == value:
-        statements_if_expression_matches_value; # expression == value
+        statementsIfExpressionMatchesValue; # expression == value
         break; # Here, `break` is used to break out of the `switch` statement similar to loop
     case >= value:
-        statements_if_expression_is_greater_than_or_equal_to_value; # expression >= value
+        statementsIfExpressionIsGreaterThanOrEqualToValue; # expression >= value
         break;
         # The limits are your imagination (I guess)
-    case < value_1 && case != value_2:
-        statements_if_expression_is_less_than_value_1_and_not_equal_to_value_2; # expression < value
+    case < value1 && case != value2:
+        statementsIfExpressionIsLessThanValue1AndNotEqualToValue2; # expression < value
         break;
     default:
-        statements_if_every_other_case_is_not_met;
+        statementsIfEveryOtherCaseIsNotMet;
         # No need for a `break` statement for last thing in `switch`
 }
 ```
@@ -1183,18 +1190,18 @@ If you have some statement before any `case` in a `switch`, it will never be exe
 ```ign
 switch (expression)
 {
-    statement_that_will_never_be_executed;
+    statementThatWillNeverBeExecuted;
     case == value:
-        statements_if_expression_matches_value;
+        statementsIfExpressionMatchesValue;
         break;
     case >= value:
-        statements_if_expression_is_greater_than_or_equal_to_value;
+        statementsIfExpressionIsGreaterThanOrEqualToValue;
         break;
-    case < value_1 && case != value_2:
-        statements_if_expression_is_less_than_value_1_and_not_equal_to_value_2;
+    case < value1 && case != value2:
+        statementsIfExpressionIsLessThanValue1AndNotEqualToValue2;
         break;
     default:
-        statements_if_every_other_case_is_not_met;
+        statementsIfEveryOtherCaseIsNotMet;
 }
 ```
 
@@ -1203,34 +1210,34 @@ If no operator is provided, the `switch` statement looks more traditional:
 ```ign
 switch (expression)
 {
-    case value_1:
-        statements_if_expression_matches_value_1; # expression == value_1
+    case value1:
+        statementsIfExpressionMatchesValue1; # expression == value1
         break;
-    case value_2:
-        statements_if_expression_matches_value_2; # expression == value_2
+    case value2:
+        statementsIfExpressionMatchesValue2; # expression == value2
         break;
-    case value_3:
-        statements_if_expression_matches_value_3; # expression == value_3
+    case value3:
+        statementsIfExpressionMatchesValue3; # expression == value3
         break;
     default:
-        statements_if_every_other_case_is_not_met;
+        statementsIfEveryOtherCaseIsNotMet;
 }
 ```
 And this is a valid syntax! It's equivalent to this:
 ```ign
 switch (expression)
 {
-    case == value_1:
-        statements_if_expression_matches_value_1; # expression == value_1
+    case == value1:
+        statementsIfExpressionMatchesValue1; # expression == value1
         break;
-    case == value_2:
-        statements_if_expression_matches_value_2; # expression == value_2
+    case == value2:
+        statementsIfExpressionMatchesValue2; # expression == value2
         break;
-    case == value_3:
-        statements_if_expression_matches_value_3; # expression == value_3
+    case == value3:
+        statementsIfExpressionMatchesValue3; # expression == value3
         break;
     default:
-        statements_if_every_other_case_is_not_met;
+        statementsIfEveryOtherCaseIsNotMet;
 }
 ```
 
@@ -1240,12 +1247,12 @@ Sometimes, you would want to execute the code of the next case too, in that case
 switch (expression)
 {
     case == value1:
-        statement_if_expression_is_equal_to_value1; # Won't be executed if expression is equal to value2
+        statementIfExpressionIsEqualToValue1; # Won't be executed if expression is equal to value2
     case == value2:
-        statement_if_expression_is_equal_to_value1_or_value2;
+        statementIfExpressionIsEqualToValue1OrValue2;
         break;
     default:
-        statement_if_other_cases_are_not_met;
+        statementIfOtherCasesAreNotMet;
 }
 ```
 You can also omit the `break` before the default if you want to execute that as well.
@@ -1256,30 +1263,30 @@ You can also omit the `break` before the default if you want to execute that as 
 switch (expression)
 {
     case == value:
-        statements_if_expression_matches_value_before_if_statement;
+        statementsIfExpressionMatchesValueBeforeIfStatement;
         if (condition)
             continue; # This will fall to case `case >= value`
-        statements_if_expression_matches_value_after_if_statement; # This will not be executed if `condition` was `true`
+        statementsIfExpressionMatchesValueAfterIfStatement; # This will not be executed if `condition` was `true`
         break;
     case >= value: # Execution continues here if `expression == value` and `condition` is `true`
-        statements_if_expression_is_greater_than_or_equal_to_value;
+        statementsIfExpressionIsGreaterThanOrEqualToValue;
         break;
     case < value:
         statements_if_expression_is_less_than_value;
         break;
     default:
-        statements_if_every_other_case_is_not_met;
+        statementsIfEveryOtherCaseIsNotMet;
 }
 ```
 
 ## Multiple `break`
 Traditionally, you can break out of `for`, `while` and `switch` just fine, but what if those statements were inside another `for`, `while` or `switch`? In that case, one break would break out of most nested `for`, `while` or `switch`, but what if you want to also break out of the parent `for`, `while` or `switch`? In that case, you can write `break break;`:
 ```ign
-while (outer_condition)
+while (outerCondition)
 {
-    for (initial_statement; inner_condition; update_statement)
+    for (initialStatement; innerCondition; updateStatement)
     {
-        if (some_other_condition)
+        if (someOtherCondition)
         {
             break break; # Break out of `for` and `while`
         }
@@ -1289,13 +1296,13 @@ while (outer_condition)
 
 For example, breaking out of the x-searching loop and y-searching loop when you found the thing you are looking for in a 2D grid:
 ```ign
-for (int i = 0; i < snake_rows; i++)
+for (int i = 0; i < snakeRows; i++)
 {
-    for (int j = 0; j < snake_columns; j++)
+    for (int j = 0; j < snakeColumns; j++)
     {
-        if (found_ladder_in_grid)
+        if (foundLadderAndPlayerInGrid)
         {
-            # Climb ladder and break
+            # Make player climb ladder and break
             break break;
         }
     }
@@ -1307,11 +1314,11 @@ You can expand it to break out of more loops and switches by adding more `break`
 ## Multiple `continue`
 When you use `continue`, it will continue to the nested-most loop (`for` or `while`). If you want to continue to the outer or more outer loop, you can use two or more `continue`:
 ```ign
-while (outer_condition)
+while (outerCondition)
 {
-    for (initial_statement; inner_condition; update_statement)
+    for (initialStatement; innerCondition; updateStatement)
     {
-        if (some_other_condition)
+        if (someOtherCondition)
         {
             continue continue; # Continue to the outer `while` loop
         }
@@ -1321,16 +1328,16 @@ while (outer_condition)
 
 For example, let's extend our snake and ladder game:
 ```ign
-for (int i = 0; i < players_count; i++)
+for (int i = 0; i < playersCount; i++)
 {
-    for (int i = 0; i < snake_rows; i++)
+    for (int i = 0; i < snakeRows; i++)
     {
-        for (int j = 0; j < snake_columns; j++)
+        for (int j = 0; j < snakeColumns; j++)
         {
             if (found_player_in_snakes_head)
             {
                 # Move the player down and start checking with next player
-                continue continue continue; # Continue to the `players_count` loop
+                continue continue continue; # Continue to the `playersCount` loop
             }
         }
     }
@@ -1341,7 +1348,7 @@ for (int i = 0; i < players_count; i++)
 
 If you have a nested switch within a loop, and used multiple `break` or `continue`, the `break` will break out of the loop or `continue` will continue the loop:
 ```ign
-for (initial_statement; inner_condition; update_statement)
+for (initialStatement; innerCondition; updateStatement)
 {
     switch (expression)
     {
@@ -1374,98 +1381,101 @@ switch (expression)
 ## Even more `break` or `continue`
 What if you have 3 `for` loops nested and want to break out of them from different places? Writing `break break break;` is tedious. Well... deal with it. Or much better: refactor your inferior code to use functions for specific tasks.
 
+## Mixing `continue` and `break`
+You can do that. The first `break` or `continue` is for the inner most loop. I think this is all the information you need to make use of it. I have no idea for example for this so you are on your own.
+
 ## Labels and `goto`
 Labels are one of the programming concept that some users just do not want to use it. They say "It makes hard to track control flow". While it may be true, I believe that labels are necessary part of a programming language and can be considered a good feature if used responsibly. Use `jmp` keyword to declare a label, and `goto` to jump to it:
 ```ign
-jmp label_name:
+jmp labelName:
     # ...
-    if (some_condition)
-        goto label_name;
+    if (someCondition)
+        goto labelName;
 ```
 or
 ```ign
-    if (some_condition)
-        goto label_name;
+    if (someCondition)
+        goto labelName;
     # ...
-jmp label_name:
+jmp labelName:
 ```
-Here, `label_name` defines a point at which the execution can jump to using the `goto` statement. The label can be defined anywhere within a function, even after the `goto` statement.
+Here, `labelName` defines a point at which the execution can jump to using the `goto` statement. The label can be defined anywhere within a function, even after the `goto` statement.
 
 For all you `goto` haters, take this valid use case of `goto`:
 Consider the below example, the code is messy (we are using [Functions](#functions) here):
 ```ign
-    bool first_file_opened = open_first_file();
-    if (!first_file_opened)
+    bool firstFileOpened = openFirstFile();
+    if (!firstFileOpened)
     {
         return 1; # Break out of the main function with error code `1`
     }
 
-    bool second_file_opened = open_second_file(use_stuff_from_first_file);
-    if (!second_file_opened)
+    bool secondFileOpened = openSecondFile(useStuffFromFirstFile);
+    if (!secondFileOpened)
     {
         # We must close the first file if the second file failed to open
-        close_first_file();
+        closeFirstFile();
         return 1;
     }
 
-    bool third_file_opened = open_third_file(use_stuff_from_second_file);
-    if (!third_file_opened)
+    bool thirdFileOpened = openThirdFile(useStuffFromSecondFile);
+    if (!thirdFileOpened)
     {
         # We must close the first and second file if third file failed to open
-        close_first_file();
-        close_second_file();
+        closeFirstFile();
+        closeSecondFile();
         return 1;
     }
 
-    bool fourth_file_opened = open_fourth_file(use_stuff_from_third_file);
-    if (!fourth_file_opened)
+    bool fourthFileOpened = openFourthFile(useStuffFromThirdFile);
+    if (!fourthFileOpened)
     {
         # We must close all the previously opened file if fourth file failed to open
-        close_first_file();
-        close_second_file();
-        close_third_file();
+        closeFirstFile();
+        closeSecondFile();
+        closeThirdFile();
         return 1;
     }
 
     # Do stuff with the files
     # ...
 
-    close_first_file();
-    close_second_file();
-    close_third_file();
-    close_fourth_file();
+    closeFirstFile();
+    closeSecondFile();
+    closeThirdFile();
+    closeFourthFile();
 
     return 0;
 ```
 You see the problem? We are duplicating the code for each failure, and it gets progressively worse for more of this. This can be solved using `goto`, so you can do this:
 ```ign
-    int return_value = 0;
+    int returnValue = 0;
 
-    bool first_file_opened = open_first_file();
-    if (!first_file_opened)
+    bool firstFileOpened = openFirstFile();
+    if (!firstFileOpened)
     {
-        return_value = 1;
+        returnValue = 1;
         goto first_file_failed;
     }
 
-    bool second_file_opened = open_second_file(use_stuff_from_first_file);
-    if (!second_file_opened)
+    bool secondFileOpened = openSecondFile(useStuffFromFirstFile);
+    if (!secondFileOpened)
     {
-        return_value = 1;
+        returnValue = 1;
         goto second_file_failed;
     }
 
-    bool third_file_opened = open_third_file(use_stuff_from_second_file);
-    if (!third_file_opened)
+    bool thirdFileOpened = openThirdFile(useStuffFromSecondFile);
+    if (!thirdFileOpened)
     {
-        return_value = 1;
+        returnValue = 1;
         goto third_file_failed;
     }
 
-    bool fourth_file_opened = open_fourth_file(use_stuff_from_third_file);
-    if (!fourth_file_opened)
+    bool fourthFileOpened = openFourthFile(useStuffFromThirdFile);
+    if (!fourthFileOpened)
     { 
-        return_value = 1;
+        returnValue = 1;
         goto fourth_file_failed;
     }
 
@@ -1473,18 +1483,18 @@ You see the problem? We are duplicating the code for each failure, and it gets p
     # ...
 
 jmp fourth_file_failed:
-    close_fourth_file();
+    closeFourthFile();
 
 jmp third_file_failed:
-    close_third_file();
+    closeThirdFile();
 
 jmp second_file_failed:
-    close_second_file();
+    closeSecondFile();
 
 jmp first_file_failed:
-    close_first_file();
+    closeFirstFile();
 
-    return return_value;
+    return returnValue;
 ```
 This way, the errored part, let's say third file opening, can just go to the label that states to close the third file. And the execution will fall to the proceeding labels and close the second and first file and return the function.
 
@@ -1496,7 +1506,7 @@ And CONGRATULATIONS! You are officially now a basic programmer! To not be so bas
 
 You have been using them! The `main` is a function that takes no arguments and returns an `int`. In the previous example about [Labels and `goto`](#labels-and-goto), we have used inexistent function to demonstrate a feature, but let's use a real function to do some job. A function is a block of code that can be called (optionally with some arguments) from anywhere in your code to do the job a function does. It executes a series of statements defined inside it, and optionally returns a value as a result. They help organize the code. For example, consider you are asking user for a formatted input and you are parsing (nothing fancy here) it. But you realize that you are using exact same code over and over again every time you want to ask user for a formatted code and parsing them in an exact same way. Now, what happens when you want to change how you parse something or how you ask the user for input? You are in a heap of trouble, my reader! You have to change every single copy you made so far. And THIS, this is where functions really shine! It is a good idea to break down your code into functions, each doing a specific task. So functions are a way to organize your code. So you can take out the asking user for input and parsing part into their separate function and use the function in your code. Now when you want to change something you do it in only one place. To declare a function, use the syntax:
 ```ign
-Return_Type function_name(Parameter_Type parameter_name)
+ReturnType function_name(ParameterType parameterName)
 {
     # Function body
 }
@@ -1504,28 +1514,28 @@ Return_Type function_name(Parameter_Type parameter_name)
 You can have multiple parameters:
 ```ign
 # The syntax for comma separated parameters is a bit different from comma separated multiple variable declaration (see [Variables and Basic Operations](#variables-and-basic-operations)) because you can have different type for different parameters
-Return_Type function_name(Parameter_Type_1 parameter_name_1, Parameter_Type_1 parameter_name_1)
+ReturnType function_name(ParameterType1 parameterName1, ParameterType2 parameterName2)
 {
     # Function body
 }
 ```
 Or with no parameters:
 ```ign
-Return_Type function_name()
+ReturnType function_name()
 {
     # Function body
 }
 ```
 Or with no return value:
 ```ign
-void function_name(Parameter_Type parameter_name)
+void function_name(ParameterType parameterName)
 {
     # Function body
 }
 ```
 Or you can omit the brace entirely if you have only one statement:
 ```ign
-Return_Type function_name(Parameter_Type parameter_name)
+ReturnType function_name(ParameterType parameterName)
     return value;
 ```
 
@@ -1534,16 +1544,16 @@ All the variables and stuff defined in a function is not accessible by other fun
 void function_a()
 {
     # `function_a`'s variable
-    int function_a_s_variable;
+    int functionAVariable;
 }
 
 void function_b()
 {
     # Cannot use the variable defined in `function_a` in `function_b`
-    function_a_s_variable = 3; # Error: No such variable `function_a_s_variable`
+    functionAVariable = 3; # Error: No such variable `functionAVariable`
 
     # Make a new variable instead
-    int function_a_s_variable;
+    int functionAVariable;
 }
 ```
 
@@ -1555,7 +1565,7 @@ For example:
 
 include io : ign.io;
 
-int input_int_from_user()
+int inputIntFromUser()
 {
     io.print("Enter a value: ");
     int value;
@@ -1563,20 +1573,20 @@ int input_int_from_user()
     return value; # Use `return` keyword to give the value to the caller
 }
 
-void output_int_to_user(int value)
+void outputIntToUser(int value)
 {
     io.print("You have entered: {value}\n");
 }
 
 int main()
 {
-    # Here, `input_int_from_user` is called, so the code execution jumps in the function and starts from running the print statements inside the function
-    # The returned value `value` is then assigned to `my_value`, so when user enters a value, the value is stored in `my_value`
-    int my_value = input_int_from_user();
+    # Here, `inputIntFromUser` is called, so the code execution jumps in the function and starts from running the print statements inside the function
+    # The returned value `value` is then assigned to `myValue`, so when user enters a value, the value is stored in `myValue`
+    int myValue = inputIntFromUser();
 
-    # Here, we make a copy of the value `my_value` and pass it to `output_int_to_user` (and call that function)
+    # Here, we make a copy of the value `myValue` and pass it to `outputIntToUser` (and call that function)
     # The code execution jumps in that function, and no value is returned (you cannot use this function to assign value to a variable)
-    output_int_to_user(my_value);
+    outputIntToUser(myValue);
 }
 ```
 
@@ -1601,10 +1611,10 @@ int add(int a, int b, int c)
 int main()
 {
     # Call the first `add` function
-    int my_value = add(2, 3);
+    int myValue = add(2, 3);
 
     # Call the second `add` function
-    int my_another_value = add(4, 5, 6);
+    int myAnotherValue = add(4, 5, 6);
 }
 ```
 
@@ -1628,10 +1638,10 @@ float add(float a, float b)
 int main()
 {
     # Call the first `add` function
-    int my_int_value = add(2, 4);
+    int myIntValue = add(2, 4);
 
     # Call the second `add` function
-    float my_float_value = add(4.5, 2.8);
+    float myFloatValue = add(4.5, 2.8);
 }
 ```
 Function cannot be overloaded by return type alone.
@@ -1641,11 +1651,11 @@ This is where it gets interesting, a thing that C/C++ can't do - Nesting Functio
 ```ign
 void function_a()
 {
-    int local_variable_a;
+    int localVariable;
     # Define a function inside a function
     void function_b()
     {
-        local_variable_a = 3;
+        localVariable = 3;
     }
 }
 ```
@@ -1671,16 +1681,17 @@ void function_c()
 ## Function Instances and Function Types
 The...... what? You heard me right! You can make a variable that can act as a function. The variable stores which function to be called when it is called. And its type is a function type:
 ```ign
-int (int a, int b) variable_that_acts_as_function = function_with_same_signature;
+int (int a, int b) variableThatActsAsFunction = function_with_same_signature;
 ```
 There's a whole lot going on here. `int (int a, int b)` what? It is the type of the variable. This type represents a function type. Later, you can do:
 ```ign
-int value = variable_that_acts_as_function(2, 5);
+int value = variableThatActsAsFunction(2, 5);
 ```
-The `variable_that_acts_as_function` now represents `function_with_same_signature` function. So when calling `variable_that_acts_as_function` it calls `function_with_same_signature`. To assign the variable, the function must have the same signature as the type of the variable. In this case, the function returns an `int`, takes two `int` parameters (`a` and `b`). Variable names are not required to match. You can also reassign the variable to some other function and calling the variable after reassigning will call the reassigned function:
+The `variableThatActsAsFunction` now represents `function_with_same_signature` function. So when calling `variableThatActsAsFunction` it calls `function_with_same_signature`. To assign the variable, the function must have the same signature as the type of the variable. In this case, the function returns an `int`, takes two `int` parameters (`a` and `b`). Variable names are not required to match. You can also reassign the variable to some other function and calling the variable after reassigning will call the reassigned function:
 ```ign
-variable_that_acts_as_function = another_function_with_same_signature;
+variableThatActsAsFunction = anotherFunction_with_same_signature;
 ```
+Also yes we still use `camelCase` for these kind of variable even if it acts as a function.
 
 So you can do this:
 ```ign
@@ -1732,53 +1743,53 @@ Be sure to use it responsibly tho, because it can introduce some issues, sometim
 ## Functions with Function as Parameters and Function as Return Type
 Now we really get into function instances and all the crazy stuff. You can pass function instance as parameter and/or get function instance as a return value of a function. Wanna see how? Check out this crazy syntax of passing function in a function:
 ```ign
-int do_operation(int a, int b, int (int a, int b) operation_function)
+int doOperation(int a, int b, int (int a, int b) operationFunction)
 {
-    return operation_function(a, b);
+    return operationFunction(a, b);
 }
 ```
 Or as return type:
 ```ign
-int (int a, int b) get_operation_function(char operation)
+int (int a, int b) getOperationFunction(char operation)
 {
-    int zero_operation(int a, int b)
+    int zeroOperation(int a, int b)
         return 0;
-    int addition_operation(int a, int b)
+    int additionOperation(int a, int b)
         return a + b;
-    int subtraction_operation(int a, int b)
+    int subtractionOperation(int a, int b)
         return a - b;
-    int multiplication_operation(int a, int b)
+    int multiplicationOperation(int a, int b)
         return a * b;
-    int division_operation(int a, int b)
+    int divisionOperation(int a, int b)
         return a / b;
     switch (operation)
     {
-        case '+': return addition_operation;
-        case '-': return subtraction_operation;
-        case '*': return multiplication_operation;
-        case '/': return division_operation;
+        case '+': return additionOperation;
+        case '-': return subtractionOperation;
+        case '*': return multiplicationOperation;
+        case '/': return divisionOperation;
         default:
             io.print("Invalid operation, returning zero operation\n");
-            return zero_operation;
+            return zeroOperation;
     }
 }
 ```
 Or both:
 ```ign
-int (int a, int b) get_inverse_operation(int (int a, int b) operation_function)
+int (int a, int b) get_inverseOperation(int (int a, int b) operationFunction)
 {
-    int inverse_operation_function(int a, int b)
-        return 1 - 1 / operation_function(a, b);
-    return inverse_operation_function;
+    int inverseOperationFunction(int a, int b)
+        return 1 - 1 / operationFunction(a, b);
+    return inverseOperationFunction;
 }
 ```
 Or function that takes a function that takes a function that takes nothing:
 ```ign
-int get_value(int (int () true_value_function) true_value_getter)
+int get_value(int (int () valueGetter) valueGetterGetter)
 {
-    int true_value_function()
+    int get_value_fr()
         return 3;
-    return true_value_getter(true_value_function);
+    return valueGetterGetter(get_value_fr);
 }
 ```
 And it keeps going.
@@ -1803,13 +1814,13 @@ int main()
 
 There is a reason you cannot define an anonymous function in global scope... how are you gonna use it? Oh and, you can also define a function instance that holds an anonymous function:
 ```ign
-int () function_instance = int () {
-    # Anonymous function that is no longer anonymous because it is initialized to `function_instance` and `function_instance` can track this function
+int () functionInstance = int () {
+    # Anonymous function that is no longer anonymous because it is initialized to `functionInstance` and `functionInstance` can track this function
 };
 ```
-This is NOT a regular function when you define it this way, because the `function_instance` can be changed unlike a regular function:
+This is NOT a regular function when you define it this way, because the `functionInstance` can be changed unlike a regular function:
 ```ign
-function_instance = int () {
+functionInstance = int () {
     # Another anonymous function, the original anonymous function is lost forever now.
 };
 ```
@@ -1818,50 +1829,55 @@ function_instance = int () {
 
 Sometimes, you would want to set a variable as constant, so you don't accidentally change its value and cause your factory to be set on fire. To declare a variable as constant, use the `const` keyword, a type specifier, before the type:
 ```ign
-const int max_stars_can_render = 512;
+const int MAX_STARS_CAN_BE_RENDERED = 512;
 ```
 A constant, when a value is set, cannot be changed (that's why it's called a constant):
 ```ign
-max_stars_can_render = 128; // Error: Cannot change the value of constant
+MAX_STARS_CAN_BE_RENDERED = 128; // Error: Cannot change the value of constant
 ```
 
 NOTE: This is not a valid syntax:
 ```ign
-int const constant_name = value;
+int const CONSTANT_NAME = value;
 ```
 The `const` is applied towards the right, but there is no type name on the right side of the `const` so this is an invalid syntax.
 
 # Pointers
 
-Ok now don't panic.. d-don't panic. Alright? Calm down. Shhhh...
-Ok a pointer is just a variable that stores the memory address of another variable. Ok ok shhh calm down calm down, we got this.
+Ok now don't panic.. d-don't panic. A pointer is just a variable that stores the memory address of another variable. Ok ok shhh calm down calm down, we got this.
 
 Memory of a variable is usually stored in RAM, Cache (CPU automatically takes stuff from RAM and put it in cache) or sometimes even you storage drive (SSD, HDD. If you have set up your swap partition or file. Or whatever is equivalent in Microsoft Windows OS). So it isn't too accurate to say that memory of a variable lies on RAM. For simplicity sake, we do.
 
 So, every variable has a memory address at which the value of a variable resides. This address can be retrieved using the `addr` (Address Of) operator. The returned value of this is a pointer type. But it is just a number. A number that happened to be a memory address of a variable. You can store this number in a pointer type. Use the `ptr` keyword, a type specifier, to create a pointer that points to a variable of a certain type:
 ```ign
 # Demo integer
-int my_totally_normal_variable = 4;
-ptr int my_pointer_variable = addr my_totally_normal_variable;
+int myTotallyNormalVariable = 4;
+ptr int myPointerVariable = addr myTotallyNormalVariable;
 ```
 
 Ok. Now what can we do with a pointer? We can edit the value of a variable without accessing the variable. To do this, use the `deref` keyword:
 ```ign
-deref my_pointer_variable = 6;
+deref myPointerVariable = 6;
 
 # Prints `6`?!
-io.print("Value of my_totally_normal_variable: {my_totally_normal_variable}\n");
+io.print("Value of myTotallyNormalVariable: {myTotallyNormalVariable}\n");
 ```
 
 You may think pointers are pointless (get it?). This example is pointless. But pointers allow for so much flexibility. See [Pointer `struct`](#pointer-struct) and [Manual Memory Management](#manual-memory-management).
 
 # References
 
+**PENDING**
+
 References are just aliases to a variable.
 
 # Manual Memory Management
 
+**PENDING**
+
 # More on Functions
+
+**PENDING**
 
 ## Pass by Value vs. Pass by Reference or Pointer
 ## More Function Examples
@@ -1893,29 +1909,29 @@ References are just aliases to a variable.
 
 When you want to store multiple data of similar type and similar intent, doing this is bad:
 ```ign
-int 1_user_id;
-int 2_user_id;
-int 3_user_id;
-int 4_user_id;
-int 5_user_id;
+int userID1;
+int userID2;
+int userID3;
+int userID4;
+int userID5;
 # ...
 ```
 Not only it repeats the code, but also hard to maintain. So introducing arrays:
 ```ign
-int[5] user_ids; # Here, you can store 5 different `int`s under a same name (`user_ids`), each can have arbitrary `int` value
+int[5] userIDs; # Here, you can store 5 different `int`s under a same name (`userIDs`), each can have arbitrary `int` value
 ```
 The size is optional, if not specified, it will use the size as number of parameters given to initialize the array, or `0` if none specified.
 
 To access the individual element of an array, you would use subscript operator `[` and `]`:
 ```ign
-int 4_user_id = user_ids[3]; # Get the fourth element of the array
-io.print("Value of the id of the second user: ", user_ids[1]); # Get the second element
+int userID4 = userIDs[3]; # Get the fourth element of the array
+io.print("Value of the id of the second user: ", userIDs[1]); # Get the second element
 ```
 Note that the index (which comes in between the subscript operator) starts from `0`. Which means the first element is at `0`, the second element is at `1`, and so on, and the last element is at the number of total elements minus one (`n-1`).
 
 You can edit the element as such:
 ```
-user_ids[2] = 10013; # Edit the value of the third element
+userIDs[2] = 10013; # Edit the value of the third element
 ```
 
 ## Traversing an Array
@@ -1928,9 +1944,9 @@ for (int i = 0; i < array.count(); i++) # the .count method is used to get the n
 ```
 For example:
 ```ign
-for (int i = 0; i < user_ids.count(); i++)
+for (int i = 0; i < userIDs.count(); i++)
 {
-    io.print("ID of user #{i}: {user_ids[i]}\n");
+    io.print("ID of user #{i}: {userIDs[i]}\n");
 }
 ```
 
@@ -1942,8 +1958,8 @@ This function returns the number of elements that the array has.
 For example:
 ```ign
 int[5] array = [2, 4, 5, 6]; # Still has 5 elements
-uint64 elements_count = array.count(); # `count()` returns of type `uint64`
-io.print("Number of elements: {elements_count}\n"); # Prints `Number of elements: 5`
+uint64 elementsCount = array.count(); # `count()` returns of type `uint64`
+io.print("Number of elements: {elementsCount}\n"); # Prints `Number of elements: 5`
 ```
 
 ### `insert(index, element)`
@@ -1981,9 +1997,10 @@ io.print("\n");
 ## Strings
 Ever wondered what the data type of `"string"` was? It's an array of `char`, so it's `char[]`. That's it! `io.print` function accepts `char[]` as it's input.
 ```ign
-char[] my_name = "Anstro Pleuton";
+char[] myName = "Anstro Pleuton";
+char[] myNameFormatted = "My name is: {myName}\n";
 
-io.print("My name is: {my_name}\n");
+io.print(myNameFormatted);
 ```
 
 ## Operations on Strings
@@ -1992,19 +2009,19 @@ There are some things that you can do to string but not to any other array, they
 ### `length()`
 `length()` differs from `count()`, `length()` returns the number of characters excluding the null terminator of the string (just learn C/C++ goddamn it).
 ```ign
-char[] my_address = "#000 AAA, #000 BBB, CCC, DDD - #00000000"; # Did you really thought?
+char[] myAddress = "#000 AAA, #000 BBB, CCC, DDD - #00000000"; # Did you really thought?
 
-uint64 address_length = my_address.length(); # `40`
-uint64 address_memory_size = my_address.count(); # `41`! (no not `41` factorial for all you math memers out there)
+uint64 addressLength = myAddress.length(); # `40`
+uint64 addressMemorySize = myAddress.count(); # `41`! (no not `41` factorial for all you math folks out there)
 ```
 
 ### Conversion to String
 You can also convert an integer to a string, by casting it to `char[]`:
 ```ign
-int my_integer = 42;
-char[] my_integer_as_string = my_integer; # Implicit cast/conversion
+int myInteger = 42;
+char[] myIntegerAsString = (char[])myInteger;
 
-io.print("My integer as string: {my_integer_as_string}\n");
+io.print("My integer as string: {myIntegerAsString}\n");
 ```
 This happens only when there is a casting operation present in the data type. `int` and all the other fundamental data types has it.
 
@@ -2016,14 +2033,14 @@ char[] name = "Ray"; # No not my real name
 int age = 21;
 uint id = 10025;
 
-char[] formatted_string = "Name: {name}\nAge: {age}, User ID: {id}";
+char[] formattedString = "Name: {name}\nAge: {age}, User ID: {id}";
 
 # This prints `Name: Ray, Age: 21, User ID: 10025`
-io.print(formatted_string);
+io.print(formattedString);
 ```
 If you have a regex pattern like `^[a-zA-Z0-9_-]{3,16}$`, you would use `{{` and `}}` instead of `{` and `}` in the string:
 ```ign
-char[] regex_pattern = "^[a-zA-Z0-9_-]{{3,16}}$";
+char[] regexPattern = "^[a-zA-Z0-9_-]{{3,16}}$";
 ```
 
 ## Negative Array Index
@@ -2031,10 +2048,10 @@ You can access the last element of an array using `-1` as it's index values. For
 ```ign
 int[] array = [1, 2, 3, 4, 5];
 
-int last_element = array[-1];
+int lastElement = array[-1];
 
 # Prints `Last element: 5`
-io.print("Last element: {last_element}");
+io.print("Last element: {lastElement}");
 ```
 This features is ~~stolen~~ taken from the Python programming language. So you can get the last *n*th element in an array:
 ```ign
@@ -2050,12 +2067,14 @@ Ever wanted to add a new element at the end of the array without doing this pesk
 ```ign
 array.insert(array.count(), value);
 ```
-Yes? Ever wanted to join two arrays together without having to do this?
+Yes?
+Ever wanted to join two arrays together without having to do this?
 ```ign
-for (uint64 i = 0; i < array_two.count(); i++)
-    array_one.insert(array_one.count(), array_two[i]);
+for (uint64 i = 0; i < arrayTwo.count(); i++)
+    arrayOne.insert(arrayOne.count(), arrayTwo[i]);
 ```
-Yes? We have got ya! All you need to do is include `ign.array.extras` library.
+Yes too?
+We have got ya! All you need to do is include `ign.array.extras` library.
 ```ign
 include ign.array.extras;
 ```
@@ -2063,77 +2082,77 @@ include ign.array.extras;
 ### Array `+` Operator
 To join two arrays, which creates a new array, you can use the `+` operator:
 ```ign
-int array_one = [1, 2, 3, 4, 5];
-int array_two = [6, 7, 8, 9, 10];
+int arrayOne = [1, 2, 3, 4, 5];
+int arrayTwo = [6, 7, 8, 9, 10];
 
-int joined_array = array_one + array_two;
+int joinedArray = arrayOne + arrayTwo;
 ```
 Or you can use the `join` method to join the arrays:
 ```ign
-int joined_array = array_one.join(array_two);
+int joinedArray = arrayOne.join(arrayTwo);
 ```
 Or this if you want to be ever so slightly consistent
 ```ign
-int joined_array = int[].join(array_one, array_two);
+int joinedArray = int[].join(arrayOne, arrayTwo);
 ```
 
 You can also use a the `+` operator with an array and a variable/constant of the data type of the array as it's operands:
 ```ign
-int my_array = [1, 2, 3, 4];
-int new_array = my_array + 5; # Append `5` at the back of the array, so this array has elements `[1, 2, 3, 4, 5]`
+int myArray = [1, 2, 3, 4];
+int newArray = myArray + 5; # Append `5` at the back of the array, so this array has elements `[1, 2, 3, 4, 5]`
 ```
 Or you can use the `append` method:
 ```ign
-int my_array = [1, 2, 3, 4];
-int new_array = my_array.append(5);
+int myArray = [1, 2, 3, 4];
+int newArray = myArray.append(5);
 ```
 
 ### Array `+=` Operator
 Tired of doing this now?
 ```ign
-array_one = array_one + array_two;
+arrayOne = arrayOne + arrayTwo;
 ```
 Just do:
 ```ign
-array_one += array_two;
+arrayOne += arrayTwo;
 ```
 All the same stuff as previous.
 Or this if you want to use the `join` method using a special operator:
 ```ign
-array_one .= join(array_two);
+arrayOne .= join(arrayTwo);
 ```
 The above `.=` operator is called [Method Assignment Operator](#method-assignment-operator).
 
 ### Array slicing
 You can slice an array into a smaller array by using `[` followed by the first index (inclusive), then `:`, then the last index (exclusive), and then `]`. This is also ~~stolen~~ taken from the Python programming language:
 ```ign
-int big_array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+int bigArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-int small_array = big_array[3:6];
+int smallArray = bigArray[3:6];
 
 # Prints `Small array contents: 4 5 6`
 io.print("Small array contents:");
-for (uint64 i = 0; i < small_array.count(); i++)
-    io.print(" {small_array[i]}");
+for (uint64 i = 0; i < smallArray.count(); i++)
+    io.print(" {smallArray[i]}");
 io.print("\n");
 ```
 Or you can use the `split` method:
 ```ign
-int big_array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+int bigArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-int small_array = big_array.split(3, 6);
+int smallArray = bigArray.split(3, 6);
 ```
 This can also throw an exception `"Invalid Range [{first}, {last}]"` if the `first` in the operator or method is more than `last`, so don't do `[3:1]`. If the `first` and `last` are equal, it will return an empty array.
 
 ## Non-homogeneous Arrays
 This is going to be a weird one, but you can have an array with elements of different types. Why will it be useful? Developers will figure it out (maybe replacement for variadic functions). This will require you to retrieve type of an element, using Type-Of operator (see [Operations on Types](#operations-on-types)), which is surrounding a type by angle brackets. To declare and use non-homogeneous arrays, use the `auto`:
 ```ign
-auto[] non_homogeneous_array = [1, 2.5, 0.30000000000000004_f64, "Hello, Homogeneous", 'a', 'r', 'r', 'a', 'y', '!', true, "ly", "gorgeous"];
+auto[] nonHomogeneousArray = [1, 2.5, 0.30000000000000004_f64, "Hello, Homogeneous", 'a', 'r', 'r', 'a', 'y', '!', true, "ly", "gorgeous"];
 
 # Print all
-for (uint64 i = 0; i < non_homogeneous_array.count(); i++)
+for (uint64 i = 0; i < nonHomogeneousArray.count(); i++)
 {
-    auto element = non_homogeneous_array[i];
+    auto element = nonHomogeneousArray[i];
 
     # void here basically means all the fundamental type
     if (<element> == void)
@@ -2146,6 +2165,7 @@ for (uint64 i = 0; i < non_homogeneous_array.count(); i++)
     }
 }
 ```
+It really got complicated isn't it? Don't worry, come back to this example after you read more of this document.
 
 # Even More to Functions
 
